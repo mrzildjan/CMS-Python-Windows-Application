@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 #  this is a comment boang
 # test commit number 2
 # test commit 3
+
 def show_page(frame):
     widget.addWidget(frame)
     widget.setCurrentIndex(widget.currentIndex() + 1)
@@ -151,7 +152,6 @@ class Book_interment(QMainWindow):
         super(Book_interment, self).__init__()
         loadUi("gui/book_interment.ui", self)
         self.backbtn.clicked.connect(self.goto_booking_services)
-        self.checkbtn.clicked.connect(self.check_plot_status)
         self.booknowbtn.clicked.connect(self.book_now)
         cus_fname = self.cus_fname
         cus_lname = self.cus_lname
@@ -163,10 +163,6 @@ class Book_interment(QMainWindow):
         dec_dob = self.dec_dob
         dec_dod = self.dec_dod
         dec_doi = self.dec_doi
-        plot_name = self.plot_name
-        plot_row = self.plot_row
-        plot_column = self.plot_column
-        plot_status = self.plot_status
 
     def goto_booking_services(self):
         booking_services = Booking_services()
@@ -197,9 +193,7 @@ class Plot_reservation(QMainWindow):
         plot_column = self.plot_column
         plot_status = self.plot_status
         plot_price = self.plot_price
-        payment = self.payment
-        amount = self.amount
-        balance = self.balance
+
 
 
     def goto_booking_services(self):

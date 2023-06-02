@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1960</width>
-    <height>969</height>
+    <width>1366</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>-10</x>
       <y>0</y>
-      <width>1960</width>
-      <height>1050</height>
+      <width>1366</width>
+      <height>768</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -32,8 +32,8 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>910</x>
-       <y>120</y>
+       <x>600</x>
+       <y>40</y>
        <width>551</width>
        <height>121</height>
       </rect>
@@ -58,8 +58,8 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="geometry">
       <rect>
-       <x>830</x>
-       <y>200</y>
+       <x>620</x>
+       <y>120</y>
        <width>701</width>
        <height>61</height>
       </rect>
@@ -80,10 +80,10 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="bookforintermentbtn">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>300</y>
-       <width>820</width>
-       <height>141</height>
+       <x>560</x>
+       <y>220</y>
+       <width>650</width>
+       <height>90</height>
       </rect>
      </property>
      <property name="font">
@@ -116,10 +116,10 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="plotreservationbtn">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>480</y>
-       <width>820</width>
-       <height>131</height>
+       <x>560</x>
+       <y>340</y>
+       <width>650</width>
+       <height>90</height>
       </rect>
      </property>
      <property name="font">
@@ -149,46 +149,13 @@ p, li { white-space: pre-wrap; }
       <string>Plot Reservation</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="backbtn">
-     <property name="geometry">
-      <rect>
-       <x>770</x>
-       <y>660</y>
-       <width>201</width>
-       <height>70</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>16</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">#backbtn {
-background-color:rgb(213, 0, 0);
-
-color: white;
-font-size:4rem;
-border-radius:15px
-}
-
-#backbtn:hover {
-background-color:rgb(180, 0, 0)
-}</string>
-     </property>
-     <property name="text">
-      <string>BACK</string>
-     </property>
-    </widget>
     <widget class="QWidget" name="BACKGROUND" native="true">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>1960</width>
-       <height>1050</height>
+       <width>1366</width>
+       <height>768</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -199,14 +166,14 @@ background-color:rgb(180, 0, 0)
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1960</width>
-        <height>1050</height>
+        <width>1366</width>
+        <height>768</height>
        </rect>
       </property>
       <property name="minimumSize">
        <size>
-        <width>1960</width>
-        <height>1050</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -225,13 +192,45 @@ background-color:rgb(180, 0, 0)
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QPushButton" name="backbtn">
+      <property name="geometry">
+       <rect>
+        <x>560</x>
+        <y>460</y>
+        <width>201</width>
+        <height>70</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">#backbtn {
+background-color:rgb(213, 0, 0);
+
+color: white;
+font-size:4rem;
+border-radius:15px
+}
+
+#backbtn:hover {
+background-color:rgb(180, 0, 0)
+}</string>
+      </property>
+      <property name="text">
+       <string>BACK</string>
+      </property>
+     </widget>
     </widget>
     <zorder>BACKGROUND</zorder>
     <zorder>Cemasys</zorder>
     <zorder>txttitle_3</zorder>
     <zorder>bookforintermentbtn</zorder>
     <zorder>plotreservationbtn</zorder>
-    <zorder>backbtn</zorder>
    </widget>
   </widget>
  </widget>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1960</width>
-    <height>1050</height>
+    <width>1366</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,63 +26,13 @@
     <property name="styleSheet">
      <string notr="true">BACKGROUND-COLOR:rgb(145, 0, 0)</string>
     </property>
-    <widget class="QTextEdit" name="Cemasys">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>110</x>
-       <y>10</y>
-       <width>341</width>
-       <height>111</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color:WHITE;
-border: none;
-background-color: transparent;</string>
-     </property>
-     <property name="html">
-      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#ffffff;&quot;&gt;C&lt;/span&gt;&lt;span style=&quot; font-size:28pt; font-weight:600; color:#ffffff;&quot;&gt;EMASYS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-    <widget class="QTextEdit" name="txttitle_3">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>90</y>
-       <width>711</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: transparent;
-color:rgb(135, 0, 0);
-border: none</string>
-     </property>
-     <property name="html">
-      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#ffffff;&quot;&gt;__________________________________________&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
     <widget class="QWidget" name="frame" native="true">
      <property name="geometry">
       <rect>
-       <x>110</x>
-       <y>180</y>
-       <width>1721</width>
-       <height>801</height>
+       <x>60</x>
+       <y>120</y>
+       <width>1281</width>
+       <height>601</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -93,9 +43,9 @@ border-radius:20px;</string>
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>730</y>
-        <width>141</width>
-        <height>61</height>
+        <y>550</y>
+        <width>130</width>
+        <height>40</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -144,10 +94,10 @@ p, li { white-space: pre-wrap; }
      <widget class="QLineEdit" name="txtfname">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>160</x>
         <y>100</y>
-        <width>401</width>
-        <height>50</height>
+        <width>280</width>
+        <height>40</height>
        </rect>
       </property>
       <property name="font">
@@ -184,10 +134,10 @@ p, li { white-space: pre-wrap; }
      <widget class="QLineEdit" name="txtlname">
       <property name="geometry">
        <rect>
-        <x>620</x>
+        <x>450</x>
         <y>100</y>
-        <width>401</width>
-        <height>50</height>
+        <width>280</width>
+        <height>40</height>
        </rect>
       </property>
       <property name="font">
@@ -224,10 +174,10 @@ p, li { white-space: pre-wrap; }
      <widget class="QDateEdit" name="dob">
       <property name="geometry">
        <rect>
-        <x>1050</x>
+        <x>750</x>
         <y>100</y>
-        <width>281</width>
-        <height>50</height>
+        <width>250</width>
+        <height>40</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -246,10 +196,10 @@ color: rgb(122, 122, 122)</string>
      <widget class="QDateEdit" name="dod">
       <property name="geometry">
        <rect>
-        <x>1350</x>
+        <x>1010</x>
         <y>100</y>
-        <width>281</width>
-        <height>50</height>
+        <width>250</width>
+        <height>40</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -269,7 +219,7 @@ color: rgb(122, 122, 122)</string>
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>1120</x>
+        <x>830</x>
         <y>70</y>
         <width>191</width>
         <height>21</height>
@@ -286,7 +236,7 @@ color:rgb(143, 143, 143)</string>
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>1410</x>
+        <x>1060</x>
         <y>70</y>
         <width>191</width>
         <height>21</height>
@@ -306,9 +256,9 @@ color:rgb(143, 143, 143)</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>40</x>
+        <x>-10</x>
         <y>40</y>
-        <width>1031</width>
+        <width>791</width>
         <height>61</height>
        </rect>
       </property>
@@ -328,10 +278,10 @@ p, li { white-space: pre-wrap; }
      <widget class="QPushButton" name="add_rec_btn">
       <property name="geometry">
        <rect>
-        <x>1470</x>
-        <y>730</y>
-        <width>241</width>
-        <height>61</height>
+        <x>1050</x>
+        <y>540</y>
+        <width>220</width>
+        <height>50</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -355,15 +305,15 @@ background-color: rgb(0, 106, 0)
       <property name="geometry">
        <rect>
         <x>40</x>
-        <y>230</y>
-        <width>1671</width>
-        <height>391</height>
+        <y>200</y>
+        <width>1221</width>
+        <height>251</height>
        </rect>
       </property>
       <property name="font">
        <font>
         <family>MS Shell Dlg 2</family>
-        <pointsize>18</pointsize>
+        <pointsize>14</pointsize>
         <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
@@ -371,17 +321,20 @@ background-color: rgb(0, 106, 0)
       </property>
       <property name="styleSheet">
        <string notr="true">
-font: 18pt &quot;MS Shell Dlg 2&quot;;
+font: 14pt &quot;MS Shell Dlg 2&quot;;
 height: 5rem</string>
       </property>
       <property name="alternatingRowColors">
        <bool>true</bool>
       </property>
       <property name="rowCount">
-       <number>5</number>
+       <number>3</number>
       </property>
+      <attribute name="horizontalHeaderCascadingSectionResizes">
+       <bool>false</bool>
+      </attribute>
       <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>180</number>
+       <number>130</number>
       </attribute>
       <attribute name="verticalHeaderDefaultSectionSize">
        <number>60</number>
@@ -393,15 +346,13 @@ height: 5rem</string>
       </row>
       <row/>
       <row/>
-      <row/>
-      <row/>
       <column>
        <property name="text">
         <string>ID</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -411,7 +362,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -421,7 +372,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -431,7 +382,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -441,7 +392,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
          <weight>50</weight>
          <bold>false</bold>
          <stylestrategy>PreferDefault</stylestrategy>
@@ -455,7 +406,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -465,7 +416,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -475,7 +426,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -485,7 +436,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -495,8 +446,8 @@ height: 5rem</string>
        <rect>
         <x>40</x>
         <y>100</y>
-        <width>141</width>
-        <height>50</height>
+        <width>110</width>
+        <height>40</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -536,14 +487,14 @@ color: white;
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1960</width>
-        <height>1050</height>
+        <width>1366</width>
+        <height>768</height>
        </rect>
       </property>
       <property name="minimumSize">
        <size>
-        <width>1960</width>
-        <height>1050</height>
+        <width>0</width>
+        <height>0</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -562,10 +513,58 @@ color: white;
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QTextEdit" name="Cemasys">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>341</width>
+        <height>111</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color:WHITE;
+border: none;
+background-color: transparent;</string>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#ffffff;&quot;&gt;C&lt;/span&gt;&lt;span style=&quot; font-size:28pt; font-weight:600; color:#ffffff;&quot;&gt;EMASYS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="txttitle_3">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>-30</x>
+        <y>60</y>
+        <width>711</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: transparent;
+color:rgb(135, 0, 0);
+border: none</string>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#ffffff;&quot;&gt;__________________________________________&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
     </widget>
     <zorder>widget</zorder>
-    <zorder>Cemasys</zorder>
-    <zorder>txttitle_3</zorder>
     <zorder>frame</zorder>
    </widget>
   </widget>

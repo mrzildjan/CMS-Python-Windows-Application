@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1960</width>
-    <height>1050</height>
+    <width>1366</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,69 +26,19 @@
     <property name="styleSheet">
      <string notr="true">BACKGROUND-COLOR:rgb(145, 0, 0)</string>
     </property>
-    <widget class="QTextEdit" name="Cemasys">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>1030</x>
-       <y>60</y>
-       <width>271</width>
-       <height>111</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color:WHITE;
-border: none;
-background-color: transparent;</string>
-     </property>
-     <property name="html">
-      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#b40000;&quot;&gt;C&lt;/span&gt;&lt;span style=&quot; font-size:28pt; font-weight:600; color:#b40000;&quot;&gt;EMASYS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-    <widget class="QTextEdit" name="txttitle_3">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>830</x>
-       <y>150</y>
-       <width>701</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: transparent;
-color:rgb(135, 0, 0);
-border: none</string>
-     </property>
-     <property name="html">
-      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#b40000;&quot;&gt;__________________________________________&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="plotlocatorbtn">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>250</y>
-       <width>820</width>
-       <height>100</height>
+       <x>620</x>
+       <y>160</y>
+       <width>500</width>
+       <height>60</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Arial</family>
-       <pointsize>28</pointsize>
+       <pointsize>22</pointsize>
        <weight>75</weight>
        <italic>false</italic>
        <bold>true</bold>
@@ -115,16 +65,16 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="searchrecordbtn">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>358</y>
-       <width>820</width>
-       <height>100</height>
+       <x>620</x>
+       <y>240</y>
+       <width>500</width>
+       <height>60</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Arial</family>
-       <pointsize>28</pointsize>
+       <pointsize>22</pointsize>
        <weight>75</weight>
        <italic>false</italic>
        <bold>true</bold>
@@ -151,16 +101,16 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="bookbtn">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>466</y>
-       <width>820</width>
-       <height>100</height>
+       <x>620</x>
+       <y>320</y>
+       <width>500</width>
+       <height>60</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Arial</family>
-       <pointsize>28</pointsize>
+       <pointsize>22</pointsize>
        <weight>75</weight>
        <italic>false</italic>
        <bold>true</bold>
@@ -187,16 +137,16 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="viewmapbtn">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>573</y>
-       <width>820</width>
-       <height>100</height>
+       <x>620</x>
+       <y>400</y>
+       <width>500</width>
+       <height>60</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Arial</family>
-       <pointsize>28</pointsize>
+       <pointsize>22</pointsize>
        <weight>75</weight>
        <italic>false</italic>
        <bold>true</bold>
@@ -223,16 +173,16 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="transactionbtn">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>681</y>
-       <width>820</width>
-       <height>100</height>
+       <x>620</x>
+       <y>480</y>
+       <width>500</width>
+       <height>60</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Arial</family>
-       <pointsize>28</pointsize>
+       <pointsize>22</pointsize>
        <weight>75</weight>
        <italic>false</italic>
        <bold>true</bold>
@@ -259,16 +209,16 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="aboutusbtn">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>789</y>
-       <width>820</width>
-       <height>100</height>
+       <x>620</x>
+       <y>560</y>
+       <width>500</width>
+       <height>60</height>
       </rect>
      </property>
      <property name="font">
       <font>
        <family>Arial</family>
-       <pointsize>28</pointsize>
+       <pointsize>22</pointsize>
        <weight>75</weight>
        <italic>false</italic>
        <bold>true</bold>
@@ -295,18 +245,21 @@ p, li { white-space: pre-wrap; }
     <widget class="QPushButton" name="logoutbtn">
      <property name="geometry">
       <rect>
-       <x>770</x>
-       <y>940</y>
-       <width>201</width>
-       <height>70</height>
+       <x>620</x>
+       <y>640</y>
+       <width>150</width>
+       <height>40</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>16</pointsize>
+       <pointsize>12</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>UpArrowCursor</cursorShape>
      </property>
      <property name="styleSheet">
       <string notr="true">#logoutbtn {
@@ -330,8 +283,8 @@ background-color:rgb(180, 0, 0)
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>1960</width>
-       <height>1050</height>
+       <width>1370</width>
+       <height>768</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -342,15 +295,9 @@ background-color:rgb(180, 0, 0)
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1960</width>
-        <height>1050</height>
+        <width>1366</width>
+        <height>768</height>
        </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>1960</width>
-        <height>1050</height>
-       </size>
       </property>
       <property name="maximumSize">
        <size>
@@ -368,10 +315,58 @@ background-color:rgb(180, 0, 0)
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QTextEdit" name="txttitle_3">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>610</x>
+        <y>90</y>
+        <width>561</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: transparent;
+color:rgb(135, 0, 0);
+border: none</string>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#b40000;&quot;&gt;______________________________________&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="Cemasys">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>760</x>
+        <y>20</y>
+        <width>271</width>
+        <height>111</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color:WHITE;
+border: none;
+background-color: transparent;</string>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#b40000;&quot;&gt;C&lt;/span&gt;&lt;span style=&quot; font-size:28pt; font-weight:600; color:#b40000;&quot;&gt;EMASYS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
     </widget>
     <zorder>BACKGROUND</zorder>
-    <zorder>Cemasys</zorder>
-    <zorder>txttitle_3</zorder>
     <zorder>plotlocatorbtn</zorder>
     <zorder>searchrecordbtn</zorder>
     <zorder>bookbtn</zorder>
