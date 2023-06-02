@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 #  this is a comment boang
+# test commit number 2
 def show_page(frame):
     widget.addWidget(frame)
     widget.setCurrentIndex(widget.currentIndex() + 1)
