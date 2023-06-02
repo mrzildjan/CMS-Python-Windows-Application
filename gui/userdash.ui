@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1960</width>
+    <height>1050</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="background" native="true">
+    <property name="geometry">
+     <rect>
+      <x>-10</x>
+      <y>0</y>
+      <width>1960</width>
+      <height>1050</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">BACKGROUND-COLOR:rgb(145, 0, 0)</string>
+    </property>
+    <widget class="QTextEdit" name="Cemasys">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>1030</x>
+       <y>60</y>
+       <width>271</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color:WHITE;
+border: none;
+background-color: transparent;</string>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#b40000;&quot;&gt;C&lt;/span&gt;&lt;span style=&quot; font-size:28pt; font-weight:600; color:#b40000;&quot;&gt;EMASYS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="txttitle_3">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>830</x>
+       <y>150</y>
+       <width>701</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: transparent;
+color:rgb(135, 0, 0);
+border: none</string>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#b40000;&quot;&gt;__________________________________________&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="plotlocatorbtn">
+     <property name="geometry">
+      <rect>
+       <x>770</x>
+       <y>250</y>
+       <width>820</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>28</pointsize>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">#plotlocatorbtn {
+  background-color: rgb(112, 0, 0);
+  color: white;
+  font-size: 3rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#plotlocatorbtn:hover {
+  background-color: rgb(180, 0, 0);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Plot Locator</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="searchrecordbtn">
+     <property name="geometry">
+      <rect>
+       <x>770</x>
+       <y>358</y>
+       <width>820</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>28</pointsize>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">#searchrecordbtn {
+  background-color: rgb(112, 0, 0);
+  color: white;
+  font-size: 3rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#searchrecordbtn:hover {
+  background-color: rgb(180, 0, 0);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Search Record</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="bookbtn">
+     <property name="geometry">
+      <rect>
+       <x>770</x>
+       <y>466</y>
+       <width>820</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>28</pointsize>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">#bookbtn {
+  background-color: rgb(112, 0, 0);
+  color: white;
+  font-size: 3rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#bookbtn:hover {
+  background-color: rgb(180, 0, 0);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Services</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="viewmapbtn">
+     <property name="geometry">
+      <rect>
+       <x>770</x>
+       <y>573</y>
+       <width>820</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>28</pointsize>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">#viewmapbtn {
+  background-color: rgb(112, 0, 0);
+  color: white;
+  font-size: 3rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#viewmapbtn:hover {
+  background-color: rgb(180, 0, 0);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>View Map</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="transactionbtn">
+     <property name="geometry">
+      <rect>
+       <x>770</x>
+       <y>681</y>
+       <width>820</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>28</pointsize>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">#transactionbtn {
+  background-color: rgb(112, 0, 0);
+  color: white;
+  font-size: 3rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#transactionbtn:hover {
+  background-color: rgb(180, 0, 0);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>View Transactions</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="aboutusbtn">
+     <property name="geometry">
+      <rect>
+       <x>770</x>
+       <y>789</y>
+       <width>820</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>28</pointsize>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">#aboutusbtn {
+  background-color: rgb(112, 0, 0);
+  color: white;
+  font-size: 3rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#aboutusbtn:hover {
+  background-color: rgb(180, 0, 0);
+}
+</string>
+     </property>
+     <property name="text">
+      <string>About Us</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="logoutbtn">
+     <property name="geometry">
+      <rect>
+       <x>770</x>
+       <y>940</y>
+       <width>201</width>
+       <height>70</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">#logoutbtn {
+background-color:rgb(213, 0, 0);
+
+color: white;
+font-size:4rem;
+border-radius:15px
+}
+
+#logoutbtn:hover {
+background-color:rgb(180, 0, 0)
+}</string>
+     </property>
+     <property name="text">
+      <string>LOG OUT</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="BACKGROUND" native="true">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>1960</width>
+       <height>1050</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-image: url(:/images/cmsbg.jpg)</string>
+     </property>
+     <widget class="QLabel" name="background_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1960</width>
+        <height>1050</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>1960</width>
+        <height>1050</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>../images/cmsbg.jpg</pixmap>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <zorder>BACKGROUND</zorder>
+    <zorder>Cemasys</zorder>
+    <zorder>txttitle_3</zorder>
+    <zorder>plotlocatorbtn</zorder>
+    <zorder>searchrecordbtn</zorder>
+    <zorder>bookbtn</zorder>
+    <zorder>viewmapbtn</zorder>
+    <zorder>transactionbtn</zorder>
+    <zorder>aboutusbtn</zorder>
+    <zorder>logoutbtn</zorder>
+   </widget>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../res.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="images">
+    <file>images/search.png</file>
+    <file>images/cemeterybg.jpg</file>
+    <file>images/cmsbg.jpg</file>
+    <file>images/map.png</file>
+    <file>images/plot_locator.png</file>
+  </qresource>
+</RCC>
