@@ -2,10 +2,11 @@ import sys
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtGui import QIcon, QPixmap
 import psycopg2
 from datetime import date
 
-conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
 cursor = conn.cursor()
 
 # Get the current date
@@ -20,10 +21,6 @@ def goto_user_dash():
     user_dash = UserDash()
     show_page(user_dash)
 
-def show_success_message(message):
-    message_box = QtWidgets.QMessageBox()
-    message_box.information(None, "Success", message)
-    message_box.setStyleSheet("QMessageBox { background-color: green; }")
 
 def show_error_message(message):
     message_box = QtWidgets.QMessageBox()
@@ -54,10 +51,23 @@ class Register(QMainWindow):
         loadUi("guimain/registration.ui", self)
         self.registerbtn.clicked.connect(self.register_now)
         self.backbtn.clicked.connect(self.goto_login_page)
+        self.message_box = None
 
     def goto_login_page(self):
         login = Login()
         show_page(login)
+
+    def show_success_message(self, message):
+        message_box = QtWidgets.QMessageBox()
+        message_box.setWindowTitle("Success")
+        message_box.setText(message)
+        icon = QIcon("images/check.png")  # Replace "path/to/icon.png" with the actual path to your icon file
+        message_box.setIconPixmap(icon.pixmap(64, 64))  # Set the icon to a custom pixmap
+
+        ok_button = message_box.addButton(QtWidgets.QMessageBox.Ok)
+        message_box.setDefaultButton(ok_button)
+        self.message_box = message_box
+        message_box.exec_()
 
     def register_now(self):
         first_name = self.txtfname.text()
@@ -69,8 +79,28 @@ class Register(QMainWindow):
         password = self.txtpass.text()
         confirmpass = self.txtconfirm.text()
 
-
         try:
+            # Check for null values in input fields
+            if any(value == "" for value in
+                   [first_name, last_name, number, address, username, password, confirmpass]):
+                # Display error message for null values
+                error_message = "Please fill in all fields."
+                show_error_message(error_message)
+                return
+
+            if not (first_name.isalpha() and last_name.isalpha() and (mid_name == "" or mid_name.isalpha())):
+                # Display error message for non-letter values
+                error_message = "Name fields should only contain letters."
+                show_error_message(error_message)
+                return
+
+            # Validate number field
+            if not number.isdigit():
+                # Display error message for non-digit number
+                error_message = "Mobile Number should only contain digits."
+                show_error_message(error_message)
+                return
+
             if password == confirmpass:
 
                 # Insert the data into the "USER" table
@@ -87,7 +117,12 @@ class Register(QMainWindow):
 
                 # Registration successful message
                 success_message = "Registration Successful!"
-                show_success_message(success_message)
+                self.show_success_message(success_message)
+
+                # Redirect to login page if OK button is clicked
+                if self.message_box and self.message_box.clickedButton() == self.message_box.button(
+                        QtWidgets.QMessageBox.Ok):
+                    self.goto_login_page()
 
             else:
                 # Passwords don't match, show error message
