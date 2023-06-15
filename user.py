@@ -2,16 +2,68 @@ import sys
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon
 import psycopg2
 from datetime import date
 
-conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
-cursor = conn.cursor()
+def execute_query_fetch(query):
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
+    cursor = conn.cursor()
+
+    try:
+        # Execute the query
+        cursor.execute(query)
+
+        # Fetch the results if needed
+        results = cursor.fetchall()
+
+        # Commit the changes
+        conn.commit()
+
+        # Return the results if needed
+        return results
+
+    except psycopg2.Error as e:
+        # Handle any errors that occur during execution
+        print(f"Error executing query: {e}")
+
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+def execute_query(query):
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
+    cursor = conn.cursor()
+
+    try:
+        # Execute the query
+        cursor.execute(query)
+
+        # Commit the changes
+        conn.commit()
+
+        # Return True to indicate successful execution
+        return True
+
+    except psycopg2.Error as e:
+        # Handle any errors that occur during execution
+        print(f"Error executing query: {e}")
+
+        # Return False to indicate failed execution
+        return False
+
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
 
 # Get the current date
 current_date = date.today()
-
+# Define the global variable
+logged_in_username = None
+logged_in_password = None
 
 def show_page(frame):
     widget.addWidget(frame)
@@ -25,16 +77,14 @@ def goto_user_dash():
 def show_error_message(message):
     message_box = QtWidgets.QMessageBox()
     message_box.critical(None, "Error", message)
-    message_box.setStyleSheet("QMessageBox { background-color: red; }")
+    message_box.setStyleSheet("QMessageBox { background-color: white; }")
 
 class Login(QMainWindow):
     def __init__(self):
         super(Login, self).__init__()
         loadUi("guimain/login.ui", self)
-        username = self.inputusername
-        password = self.inputpass
         self.registerbtn.clicked.connect(self.goto_registration_page)
-        self.loginbtn.clicked.connect(self.goto_dashboard)
+        self.loginbtn.clicked.connect(self.login)
 
     def goto_registration_page(self):
         register = Register()
@@ -43,6 +93,47 @@ class Login(QMainWindow):
     def goto_dashboard(self):
         dashboard = UserDash()
         show_page(dashboard)
+
+    def login(self):
+        # Access the global variables
+        global logged_in_username
+        global logged_in_password
+
+        username = self.inputusername.text()
+        password = self.inputpass.text()
+
+        try:
+            # Check for null values in input fields
+            if any(value == "" for value in [username, password]):
+                # Display error message for null values
+                error_message = "Please fill in all fields."
+                show_error_message(error_message)
+                return
+
+            # Execute the query to check if username and password exist
+            query = f"SELECT * FROM \"USER\" WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
+
+            # Fetch the results
+            results = execute_query_fetch(query)
+
+            # Check if a matching row is found
+            if results:
+                # Store the values in global variables
+                logged_in_username = username
+                logged_in_password = password
+
+                # Successful login, redirect to dashboard
+                self.goto_dashboard()
+
+            else:
+                # Invalid login, show error message
+                error_message = "Invalid username or password. Please try again."
+                show_error_message(error_message)
+
+        except Exception as e:
+            # Handle any exceptions during database operations
+            error_message = f"An error occurred: {str(e)}"
+            show_error_message(error_message)
 
 
 class Register(QMainWindow):
@@ -108,21 +199,21 @@ class Register(QMainWindow):
                                f"USER_USERNAME, USER_PASSWORD, USER_CREATED_AT, USER_UPDATED_AT) " \
                                f"VALUES ('{first_name}', '{mid_name}', '{last_name}', '{number}', '{address}', " \
                                f"'{username}', '{password}', '{current_date}', '{current_date}')"
-                cursor.execute(insert_query)
-                conn.commit()
 
-                # Close the database connection
-                cursor.close()
-                conn.close()
+                # Execute the query and check if it was successful
+                if execute_query(insert_query):
+                    # Registration successful message
+                    success_message = "Registration Successful!"
+                    self.show_success_message(success_message)
 
-                # Registration successful message
-                success_message = "Registration Successful!"
-                self.show_success_message(success_message)
-
-                # Redirect to login page if OK button is clicked
-                if self.message_box and self.message_box.clickedButton() == self.message_box.button(
-                        QtWidgets.QMessageBox.Ok):
-                    self.goto_login_page()
+                    # Redirect to login page if OK button is clicked
+                    if self.message_box and self.message_box.clickedButton() == self.message_box.button(
+                            QtWidgets.QMessageBox.Ok):
+                        self.goto_login_page()
+                else:
+                    # Error message for failed execution
+                    error_message = "Registration failed. Please try again."
+                    show_error_message(error_message)
 
             else:
                 # Passwords don't match, show error message
@@ -145,6 +236,8 @@ class UserDash(QMainWindow):
         self.transactionbtn.clicked.connect(self.goto_transaction_page)
         self.aboutusbtn.clicked.connect(self.goto_aboutus_page)
         self.logoutbtn.clicked.connect(self.goto_login_page)
+        print(logged_in_username)
+        print(logged_in_password)
 
     def goto_plot_locator_page(self):
         plot_locator = Plot_locator()
