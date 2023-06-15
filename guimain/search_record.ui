@@ -79,9 +79,9 @@ p, li { white-space: pre-wrap; }
     <widget class="QWidget" name="frame" native="true">
      <property name="geometry">
       <rect>
-       <x>110</x>
+       <x>90</x>
        <y>180</y>
-       <width>1721</width>
+       <width>1791</width>
        <height>801</height>
       </rect>
      </property>
@@ -144,8 +144,8 @@ p, li { white-space: pre-wrap; }
      <widget class="QLineEdit" name="txtfname">
       <property name="geometry">
        <rect>
-        <x>210</x>
-        <y>110</y>
+        <x>280</x>
+        <y>120</y>
         <width>401</width>
         <height>50</height>
        </rect>
@@ -184,8 +184,8 @@ p, li { white-space: pre-wrap; }
      <widget class="QLineEdit" name="txtlname">
       <property name="geometry">
        <rect>
-        <x>630</x>
-        <y>110</y>
+        <x>700</x>
+        <y>120</y>
         <width>401</width>
         <height>50</height>
        </rect>
@@ -221,85 +221,6 @@ p, li { white-space: pre-wrap; }
        <string>Last Name</string>
       </property>
      </widget>
-     <widget class="QDateEdit" name="dob">
-      <property name="geometry">
-       <rect>
-        <x>1060</x>
-        <y>110</y>
-        <width>281</width>
-        <height>50</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">font: 16pt &quot;MS Shell Dlg 2&quot;;
-background-color:white;
-border-radius:20px;
-color: rgb(122, 122, 122)</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="buttonSymbols">
-       <enum>QAbstractSpinBox::NoButtons</enum>
-      </property>
-     </widget>
-     <widget class="QDateEdit" name="dod">
-      <property name="geometry">
-       <rect>
-        <x>1360</x>
-        <y>110</y>
-        <width>281</width>
-        <height>50</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">
-font: 16pt &quot;MS Shell Dlg 2&quot;;
-background-color:white;
-border-radius:20px;
-color: rgb(122, 122, 122)</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="buttonSymbols">
-       <enum>QAbstractSpinBox::NoButtons</enum>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>1130</x>
-        <y>80</y>
-        <width>191</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
-color:rgb(143, 143, 143)</string>
-      </property>
-      <property name="text">
-       <string>Date of Birth</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_2">
-      <property name="geometry">
-       <rect>
-        <x>1420</x>
-        <y>80</y>
-        <width>191</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
-color:rgb(143, 143, 143)</string>
-      </property>
-      <property name="text">
-       <string>Date of Death</string>
-      </property>
-     </widget>
      <widget class="QTextEdit" name="txttitle_4">
       <property name="enabled">
        <bool>false</bool>
@@ -325,47 +246,19 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#7a7a7a;&quot;&gt;__________________________________________________________&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="searchbtn">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>110</y>
-        <width>141</width>
-        <height>50</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">#searchbtn {
-color:rgb(0, 154, 0);
-background-color:rgb(255, 255, 255);
-font: 75 15pt &quot;Arial&quot;;
-border-radius:15px;
-border: 3px solid rgb(0, 156, 0);
-}
-
-#searchbtn:hover {
-
-background-color: rgb(0, 170, 0);
-color: white;
-}</string>
-      </property>
-      <property name="text">
-       <string>Search</string>
-      </property>
-     </widget>
      <widget class="QTableWidget" name="record_table">
       <property name="geometry">
        <rect>
-        <x>40</x>
+        <x>10</x>
         <y>220</y>
-        <width>1671</width>
+        <width>1771</width>
         <height>391</height>
        </rect>
       </property>
       <property name="font">
        <font>
         <family>MS Shell Dlg 2</family>
-        <pointsize>18</pointsize>
+        <pointsize>12</pointsize>
         <weight>50</weight>
         <italic>false</italic>
         <bold>false</bold>
@@ -373,47 +266,28 @@ color: white;
       </property>
       <property name="styleSheet">
        <string notr="true">
-font: 18pt &quot;MS Shell Dlg 2&quot;;
+font: 12pt &quot;MS Shell Dlg 2&quot;;
 height: 5rem</string>
       </property>
       <property name="alternatingRowColors">
        <bool>true</bool>
       </property>
       <property name="rowCount">
-       <number>5</number>
+       <number>0</number>
       </property>
       <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>180</number>
+       <number>170</number>
       </attribute>
       <attribute name="verticalHeaderDefaultSectionSize">
        <number>60</number>
       </attribute>
-      <row>
-       <property name="text">
-        <string>1</string>
-       </property>
-      </row>
-      <row/>
-      <row/>
-      <row/>
-      <row/>
       <column>
        <property name="text">
-        <string>ID</string>
+        <string>Plot Yard</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
-        </font>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Plot Name</string>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -423,7 +297,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -433,17 +307,17 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>Name</string>
+        <string>First Name</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
          <weight>50</weight>
          <bold>false</bold>
          <stylestrategy>PreferDefault</stylestrategy>
@@ -453,11 +327,31 @@ height: 5rem</string>
       </column>
       <column>
        <property name="text">
+        <string>Middle Name</string>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>13</pointsize>
+        </font>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Last Name</string>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>13</pointsize>
+        </font>
+       </property>
+      </column>
+      <column>
+       <property name="text">
         <string>Date of Birth</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -467,7 +361,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -477,7 +371,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -487,7 +381,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -525,6 +419,136 @@ height: 5rem</string>
       <property name="scaledContents">
        <bool>true</bool>
       </property>
+     </widget>
+     <widget class="QFrame" name="by_date">
+      <property name="geometry">
+       <rect>
+        <x>1110</x>
+        <y>50</y>
+        <width>611</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>30</y>
+         <width>191</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
+color:rgb(143, 143, 143)</string>
+       </property>
+       <property name="text">
+        <string>Date of Birth</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>380</x>
+         <y>30</y>
+         <width>191</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
+color:rgb(143, 143, 143)</string>
+       </property>
+       <property name="text">
+        <string>Date of Death</string>
+       </property>
+      </widget>
+      <widget class="QDateEdit" name="dob">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>70</y>
+         <width>281</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 16pt &quot;MS Shell Dlg 2&quot;;
+background-color:white;
+border-radius:20px;
+color: rgb(122, 122, 122)</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
+      <widget class="QDateEdit" name="dod">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>70</y>
+         <width>281</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+font: 16pt &quot;MS Shell Dlg 2&quot;;
+background-color:white;
+border-radius:20px;
+color: rgb(122, 122, 122)</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QComboBox" name="search">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>110</y>
+        <width>231</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">#search {
+color:black;
+background-color:rgb(255, 255, 255);
+font: 75 15pt &quot;Arial&quot;;
+border-radius:15px;
+border: 3px solid rgb(0, 156, 0);
+}
+
+#search:hover {
+
+background-color: rgb(0, 170, 0);
+color: white;
+}</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>Search by Name</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Search with Date</string>
+       </property>
+      </item>
      </widget>
     </widget>
     <widget class="QWidget" name="widget" native="true">
