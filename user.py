@@ -1,7 +1,7 @@
 import sys
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from PyQt5.QtGui import QIcon
 import psycopg2
 from datetime import date
@@ -236,8 +236,7 @@ class UserDash(QMainWindow):
         self.transactionbtn.clicked.connect(self.goto_transaction_page)
         self.aboutusbtn.clicked.connect(self.goto_aboutus_page)
         self.logoutbtn.clicked.connect(self.goto_login_page)
-        print(logged_in_username)
-        print(logged_in_password)
+
 
     def goto_plot_locator_page(self):
         plot_locator = Plot_locator()
@@ -264,6 +263,12 @@ class UserDash(QMainWindow):
         show_page(about_us)
 
     def goto_login_page(self):
+        self.reset_global_variables()
+
+    def reset_global_variables(self):
+        global logged_in_username, logged_in_password
+        logged_in_username = None
+        logged_in_password = None
         login = Login()
         show_page(login)
 
@@ -274,14 +279,47 @@ class Plot_locator(QMainWindow):
         loadUi("guimain/plot_locator.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
         self.searchbtn.clicked.connect(self.search_plot)
-        txtfname = self.txtfname
-        txtlname = self.txtlname
-        dob = self.dob
-        dod = self.dod
+        # Set placeholder text for dob and dod QDateEdit widgets
+        # Set display format for dob and dod QDateEdit widgets
+        self.dob.setDisplayFormat("yyyy-MM-dd")
+        self.dod.setDisplayFormat("yyyy-MM-dd")
 
     def search_plot(self):
-        # code to searchf for the plot
-        pass
+        txtfname = self.txtfname.text()
+        txtlname = self.txtlname.text()
+        dob = self.dob.text()
+        dod = self.dod.text()
+
+        # Construct the query
+        query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH \
+        FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) \
+        WHERE R.REL_FNAME = '{txtfname}'"
+
+        if txtlname:
+            query += f" AND R.REL_LNAME = '{txtlname}'"
+
+        if dob:
+            query += f" AND R.REL_DOB = '{dob}'"
+
+        if dod:
+            query += f" AND R.REL_DATE_DEATH = '{dod}'"
+
+        query += ";"
+
+        # Execute the query and fetch the results
+        results = execute_query_fetch(query)
+
+        # Clear the existing table content
+        self.plotlocatortable.clearContents()
+
+        # Set the table row count to the number of fetched results
+        self.plotlocatortable.setRowCount(len(results))
+
+        # Populate the table with the fetched results
+        for row_idx, row_data in enumerate(results):
+            for col_idx, col_data in enumerate(row_data):
+                item = QTableWidgetItem(str(col_data))
+                self.plotlocatortable.setItem(row_idx, col_idx, item)
 
 
 class Search_record(QMainWindow):
@@ -289,15 +327,76 @@ class Search_record(QMainWindow):
         super(Search_record, self).__init__()
         loadUi("guimain/search_record.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
-        self.searchbtn.clicked.connect(self.search_record)
-        txtfname = self.txtfname
-        txtlname = self.txtlname
-        dob = self.dob
-        dod = self.dod
+        self.by_date.setVisible(False)
+        self.dob.setDisplayFormat("yyyy-MM-dd")
+        self.dod.setDisplayFormat("yyyy-MM-dd")
+        self.search.currentTextChanged.connect(self.perform)
 
-    def search_record(self):
-        # code to search record from database
-        pass
+    def perform(self, text):
+        txtfname = self.txtfname.text()
+        txtlname = self.txtlname.text()
+        dob = self.dob.text()
+        dod = self.dod.text()
+
+        if text == "Search by Name":
+            self.by_date.setVisible(False)
+
+            # Construct the query
+            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION \
+                            FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) \
+                            WHERE R.REL_FNAME = '{txtfname}'"
+
+            if txtlname:
+                query += f" AND R.REL_LNAME = '{txtlname}'"
+
+            query += ";"
+
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
+
+            # Clear the existing table content
+            self.record_table.clearContents()
+
+            # Set the table row count to the number of fetched results
+            self.record_table.setRowCount(len(results))
+
+            # Populate the table with the fetched results
+            for row_idx, row_data in enumerate(results):
+                for col_idx, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.record_table.setItem(row_idx, col_idx, item)
+
+        else:
+            self.by_date.setVisible(True)
+
+            # Construct the query
+            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION \
+                                        FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) \
+                                        WHERE R.REL_FNAME = '{txtfname}'"
+
+            if txtlname:
+                query += f" AND R.REL_LNAME = '{txtlname}'"
+            if txtlname:
+                query += f" AND R.REL_LNAME = '{txtlname}'"
+            if txtlname:
+                query += f" AND R.REL_LNAME = '{txtlname}'"
+
+            query += ";"
+
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
+
+            # Clear the existing table content
+            self.record_table.clearContents()
+
+            # Set the table row count to the number of fetched results
+            self.record_table.setRowCount(len(results))
+
+            # Populate the table with the fetched results
+            for row_idx, row_data in enumerate(results):
+                for col_idx, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.record_table.setItem(row_idx, col_idx, item)
 
 class Booking_services(QMainWindow):
     def __init__(self):
