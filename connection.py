@@ -4,7 +4,7 @@
 import psycopg2
 
 # Establish a connection to the database
-conn = psycopg2.connect(host='localhost', user='postgres', password='your_password', dbname='cms')
+conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
 
 # Create a cursor
 cursor = conn.cursor()

@@ -14,7 +14,7 @@ def goto_admin_dash():
 class Login(QMainWindow):
     def __init__(self):
         super(Login, self).__init__()
-        loadUi("gui/login.ui", self)
+        loadUi("guimain/login.ui", self)
         username = self.inputusername
         password = self.inputpass
         self.registerbtn.clicked.connect(self.goto_registration_page)
@@ -31,7 +31,7 @@ class Login(QMainWindow):
 class Register(QMainWindow):
     def __init__(self):
         super(Register, self).__init__()
-        loadUi("gui/registration.ui", self)
+        loadUi("guimain/registration.ui", self)
         first_name = self.txtfname
         last_name = self.txtlname
         mid_name = self.txtmid
@@ -54,7 +54,7 @@ class Register(QMainWindow):
 class AdminDash(QMainWindow):
     def __init__(self):
         super(AdminDash, self).__init__()
-        loadUi("gui/admindash.ui", self)
+        loadUi("guimain/admindash.ui", self)
         self.record_man_btn.clicked.connect(self.goto_record_management)
         self.plot_man_btn.clicked.connect(self.goto_plot_management)
         self.reser_man_btn.clicked.connect(self.goto_reservation_management)
@@ -84,7 +84,7 @@ class AdminDash(QMainWindow):
 class Record_management(QMainWindow):
     def __init__(self):
         super(Record_management, self).__init__()
-        loadUi("gui/record_management.ui", self)
+        loadUi("guimain/record_management.ui", self)
         self.backbtn.clicked.connect(goto_admin_dash)
         self.add_rec_btn.clicked.connect(self.goto_add_record_page)
         txtfname = self.txtfname
@@ -100,7 +100,7 @@ class Record_management(QMainWindow):
 class Add_record(QMainWindow):
     def __init__(self):
         super(Add_record, self).__init__()
-        loadUi("gui/add_dead_record.ui", self)
+        loadUi("guimain/add_dead_record.ui", self)
         self.backbtn.clicked.connect(self.goto_record_management)
         self.checkbtn.clicked.connect(self.check_plot_status)
         self.add_rec_btn.clicked.connect(self.add_record)
@@ -130,14 +130,14 @@ class Add_record(QMainWindow):
 class Plot_management(QMainWindow):
     def __init__(self):
         super(Plot_management, self).__init__()
-        loadUi("gui/plot_management.ui", self)
+        loadUi("guimain/plot_management.ui", self)
         self.backbtn.clicked.connect(goto_admin_dash)
         plot_name_filter = self.plot_name_filter
 
 class Reservation_management(QMainWindow):
     def __init__(self):
         super(Reservation_management, self).__init__()
-        loadUi("gui/reservation_management.ui", self)
+        loadUi("guimain/reservation_management.ui", self)
         self.add_res_btn.clicked.connect(self.goto_reservation_page)
         self.backbtn.clicked.connect(goto_admin_dash)
         plot_name_filter = self.plot_name_filter
@@ -149,7 +149,7 @@ class Reservation_management(QMainWindow):
 class Reservation_page(QMainWindow):
     def __init__(self):
         super(Reservation_page, self).__init__()
-        loadUi("gui/plot_reservation.ui", self)
+        loadUi("guimain/plot_reservation.ui", self)
         self.backbtn.clicked.connect(self.goto_reservation_management)
         self.reservebtn.clicked.connect(self.reservenow)
         self.checkbtn.clicked.connect(self.check_plot_status)
@@ -178,7 +178,7 @@ class Reservation_page(QMainWindow):
 class Booking_management(QMainWindow):
     def __init__(self):
         super(Booking_management, self).__init__()
-        loadUi("gui/booking_management.ui", self)
+        loadUi("guimain/booking_management.ui", self)
         self.add_book_btn.clicked.connect(self.goto_booking_page)
         self.backbtn.clicked.connect(goto_admin_dash)
         plot_name_filter = self.plot_name_filter
@@ -190,7 +190,7 @@ class Booking_management(QMainWindow):
 class Booking_page(QMainWindow):
     def __init__(self):
         super(Booking_page, self).__init__()
-        loadUi("gui/book_interment.ui", self)
+        loadUi("guimain/book_interment.ui", self)
         self.backbtn.clicked.connect(self.goto_booking_management)
         self.booknowbtn.clicked.connect(self.book_now)
         cus_fname = self.cus_fname
@@ -223,4 +223,5 @@ login = Login()
 widget = QtWidgets.QStackedWidget()
 widget.addWidget(login)
 widget.show()
+widget.showFullScreen()
 app.exec()

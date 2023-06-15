@@ -2,6 +2,15 @@ import sys
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
+import psycopg2
+from datetime import date
+
+conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+cursor = conn.cursor()
+
+# Get the current date
+current_date = date.today()
+
 
 def show_page(frame):
     widget.addWidget(frame)
@@ -11,11 +20,20 @@ def goto_user_dash():
     user_dash = UserDash()
     show_page(user_dash)
 
+def show_success_message(message):
+    message_box = QtWidgets.QMessageBox()
+    message_box.information(None, "Success", message)
+    message_box.setStyleSheet("QMessageBox { background-color: green; }")
+
+def show_error_message(message):
+    message_box = QtWidgets.QMessageBox()
+    message_box.critical(None, "Error", message)
+    message_box.setStyleSheet("QMessageBox { background-color: red; }")
 
 class Login(QMainWindow):
     def __init__(self):
         super(Login, self).__init__()
-        loadUi("gui/login.ui", self)
+        loadUi("guimain/login.ui", self)
         username = self.inputusername
         password = self.inputpass
         self.registerbtn.clicked.connect(self.goto_registration_page)
@@ -33,15 +51,7 @@ class Login(QMainWindow):
 class Register(QMainWindow):
     def __init__(self):
         super(Register, self).__init__()
-        loadUi("gui/registration.ui", self)
-        first_name = self.txtfname
-        last_name = self.txtlname
-        mid_name = self.txtmid
-        number = self.txtnumber
-        address = self.txtaddress
-        username = self.txtusername
-        password = self.txtpass
-        confirmpass = self.txtconfirm
+        loadUi("guimain/registration.ui", self)
         self.registerbtn.clicked.connect(self.register_now)
         self.backbtn.clicked.connect(self.goto_login_page)
 
@@ -50,14 +60,49 @@ class Register(QMainWindow):
         show_page(login)
 
     def register_now(self):
-        # code to execute when registering an account
-        pass
+        first_name = self.txtfname.text()
+        last_name = self.txtlname.text()
+        mid_name = self.txtmid.text()
+        number = self.txtnumber.text()
+        address = self.txtaddress.text()
+        username = self.txtusername.text()
+        password = self.txtpass.text()
+        confirmpass = self.txtconfirm.text()
+
+
+        try:
+            if password == confirmpass:
+
+                # Insert the data into the "USER" table
+                insert_query = f"INSERT INTO \"USER\" (USER_FNAME, USER_MNAME, USER_LNAME, USER_NUMBER, USER_EMAIL, " \
+                               f"USER_USERNAME, USER_PASSWORD, USER_CREATED_AT, USER_UPDATED_AT) " \
+                               f"VALUES ('{first_name}', '{mid_name}', '{last_name}', '{number}', '{address}', " \
+                               f"'{username}', '{password}', '{current_date}', '{current_date}')"
+                cursor.execute(insert_query)
+                conn.commit()
+
+                # Close the database connection
+                cursor.close()
+                conn.close()
+
+                # Registration successful message
+                success_message = "Registration Successful!"
+                show_success_message(success_message)
+
+            else:
+                # Passwords don't match, show error message
+                error_message = "Passwords do not match. Please try again."
+                show_error_message(error_message)
+
+        except (Exception, psycopg2.Error) as error:
+            # Error message in case of failure
+            QtWidgets.QMessageBox.critical(self, "Error", f"Registration Failed!\n\nError Message: {str(error)}")
 
 
 class UserDash(QMainWindow):
     def __init__(self):
         super(UserDash, self).__init__()
-        loadUi("gui/userdash.ui", self)
+        loadUi("guimain/userdash.ui", self)
         self.plotlocatorbtn.clicked.connect(self.goto_plot_locator_page)
         self.searchrecordbtn.clicked.connect(self.goto_search_record_page)
         self.bookbtn.clicked.connect(self.goto_booking_services)
@@ -98,7 +143,7 @@ class UserDash(QMainWindow):
 class Plot_locator(QMainWindow):
     def __init__(self):
         super(Plot_locator, self).__init__()
-        loadUi("gui/plot_locator.ui", self)
+        loadUi("guimain/plot_locator.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
         self.searchbtn.clicked.connect(self.search_plot)
         txtfname = self.txtfname
@@ -114,7 +159,7 @@ class Plot_locator(QMainWindow):
 class Search_record(QMainWindow):
     def __init__(self):
         super(Search_record, self).__init__()
-        loadUi("gui/search_record.ui", self)
+        loadUi("guimain/search_record.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
         self.searchbtn.clicked.connect(self.search_record)
         txtfname = self.txtfname
@@ -129,7 +174,7 @@ class Search_record(QMainWindow):
 class Booking_services(QMainWindow):
     def __init__(self):
         super(Booking_services, self).__init__()
-        loadUi("gui/bookservices.ui", self)
+        loadUi("guimain/bookservices.ui", self)
         self.bookforintermentbtn.clicked.connect(self.goto_book_interment)
         self.plotreservationbtn.clicked.connect(self.goto_plot_reservation)
         self.backbtn.clicked.connect(goto_user_dash)
@@ -145,7 +190,7 @@ class Booking_services(QMainWindow):
 class Book_interment(QMainWindow):
     def __init__(self):
         super(Book_interment, self).__init__()
-        loadUi("gui/book_interment.ui", self)
+        loadUi("guimain/book_interment.ui", self)
         self.backbtn.clicked.connect(self.goto_booking_services)
         self.booknowbtn.clicked.connect(self.book_now)
         cus_fname = self.cus_fname
@@ -175,7 +220,7 @@ class Book_interment(QMainWindow):
 class Plot_reservation(QMainWindow):
     def __init__(self):
         super(Plot_reservation, self).__init__()
-        loadUi("gui/plot_reservation.ui", self)
+        loadUi("guimain/plot_reservation.ui", self)
         self.backbtn.clicked.connect(self.goto_booking_services)
         self.checkbtn.clicked.connect(self.check_plot_status)
         self.reservebtn.clicked.connect(self.reservenow)
@@ -206,21 +251,21 @@ class Plot_reservation(QMainWindow):
 class Map_view(QMainWindow):
     def __init__(self):
         super(Map_view, self).__init__()
-        loadUi("gui/map.ui", self)
+        loadUi("guimain/map.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
 
 
 class Transaction_page(QMainWindow):
     def __init__(self):
         super(Transaction_page, self).__init__()
-        loadUi("gui/transaction.ui", self)
+        loadUi("guimain/transaction.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
 
 
 class About_us(QMainWindow):
     def __init__(self):
         super(About_us, self).__init__()
-        loadUi("gui/aboutus.ui", self)
+        loadUi("guimain/aboutus.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
 
 
@@ -229,5 +274,5 @@ login = Login()
 widget = QtWidgets.QStackedWidget()
 widget.addWidget(login)
 widget.setGeometry(100, 100, 1336, 768)
-widget.show()
+widget.showFullScreen()
 sys.exit(app.exec())
