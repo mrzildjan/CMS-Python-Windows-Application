@@ -243,7 +243,7 @@ height: 5rem</string>
        <bool>true</bool>
       </property>
       <property name="rowCount">
-       <number>3</number>
+       <number>0</number>
       </property>
       <attribute name="horizontalHeaderDefaultSectionSize">
        <number>200</number>
@@ -251,13 +251,6 @@ height: 5rem</string>
       <attribute name="verticalHeaderDefaultSectionSize">
        <number>60</number>
       </attribute>
-      <row>
-       <property name="text">
-        <string>1</string>
-       </property>
-      </row>
-      <row/>
-      <row/>
       <column>
        <property name="text">
         <string>ID</string>
@@ -295,20 +288,6 @@ height: 5rem</string>
        <property name="font">
         <font>
          <pointsize>16</pointsize>
-        </font>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Price</string>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-         <weight>50</weight>
-         <bold>false</bold>
-         <stylestrategy>PreferDefault</stylestrategy>
-         <kerning>true</kerning>
         </font>
        </property>
       </column>
@@ -350,28 +329,21 @@ height: 5rem</string>
        <bool>true</bool>
       </property>
       <property name="rowCount">
-       <number>3</number>
+       <number>0</number>
       </property>
       <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>200</number>
+       <number>170</number>
       </attribute>
       <attribute name="verticalHeaderDefaultSectionSize">
        <number>60</number>
       </attribute>
-      <row>
-       <property name="text">
-        <string>1</string>
-       </property>
-      </row>
-      <row/>
-      <row/>
       <column>
        <property name="text">
         <string>ID</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -381,7 +353,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -391,7 +363,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -401,17 +373,17 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>Decease's Name</string>
+        <string>First Name</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
          <weight>50</weight>
          <bold>false</bold>
          <stylestrategy>PreferDefault</stylestrategy>
@@ -421,11 +393,31 @@ height: 5rem</string>
       </column>
       <column>
        <property name="text">
+        <string>Middle Column</string>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>13</pointsize>
+        </font>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Last Name</string>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>13</pointsize>
+        </font>
+       </property>
+      </column>
+      <column>
+       <property name="text">
         <string>Date of Birth</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
@@ -435,7 +427,7 @@ height: 5rem</string>
        </property>
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>13</pointsize>
         </font>
        </property>
       </column>
