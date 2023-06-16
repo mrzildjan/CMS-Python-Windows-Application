@@ -267,100 +267,6 @@ p, li { white-space: pre-wrap; }
         <string>Last Name</string>
        </property>
       </widget>
-      <widget class="QDateEdit" name="dob">
-       <property name="geometry">
-        <rect>
-         <x>1060</x>
-         <y>120</y>
-         <width>281</width>
-         <height>50</height>
-        </rect>
-       </property>
-       <property name="autoFillBackground">
-        <bool>false</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 16pt &quot;MS Shell Dlg 2&quot;;
-background-color:white;
-border-radius:20px;
-color: rgb(122, 122, 122)</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-       <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::NoButtons</enum>
-       </property>
-       <property name="keyboardTracking">
-        <bool>true</bool>
-       </property>
-       <property name="showGroupSeparator" stdset="0">
-        <bool>false</bool>
-       </property>
-       <property name="currentSection">
-        <enum>QDateTimeEdit::DaySection</enum>
-       </property>
-       <property name="calendarPopup">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QDateEdit" name="dod">
-       <property name="geometry">
-        <rect>
-         <x>1360</x>
-         <y>120</y>
-         <width>281</width>
-         <height>50</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">
-font: 16pt &quot;MS Shell Dlg 2&quot;;
-background-color:white;
-border-radius:20px;
-color: rgb(122, 122, 122)</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-       <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::NoButtons</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label">
-       <property name="geometry">
-        <rect>
-         <x>1140</x>
-         <y>90</y>
-         <width>191</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
-color:rgb(143, 143, 143)</string>
-       </property>
-       <property name="text">
-        <string>Date of Birth</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_2">
-       <property name="geometry">
-        <rect>
-         <x>1430</x>
-         <y>90</y>
-         <width>191</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
-color:rgb(143, 143, 143)</string>
-       </property>
-       <property name="text">
-        <string>Date of Death</string>
-       </property>
-      </widget>
       <widget class="QTextEdit" name="txttitle_4">
        <property name="enabled">
         <bool>false</bool>
@@ -567,6 +473,125 @@ height: 5rem</string>
        <property name="scaledContents">
         <bool>true</bool>
        </property>
+      </widget>
+      <widget class="QComboBox" name="search">
+       <property name="geometry">
+        <rect>
+         <x>480</x>
+         <y>20</y>
+         <width>201</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:white;
+font: 14pt &quot;MS Shell Dlg 2&quot;;</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>Search by Name</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Search with Date</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QFrame" name="by_date">
+       <property name="geometry">
+        <rect>
+         <x>1040</x>
+         <y>50</y>
+         <width>611</width>
+         <height>151</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>90</x>
+          <y>30</y>
+          <width>191</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
+color:rgb(143, 143, 143)</string>
+        </property>
+        <property name="text">
+         <string>Date of Birth</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>380</x>
+          <y>30</y>
+          <width>191</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
+color:rgb(143, 143, 143)</string>
+        </property>
+        <property name="text">
+         <string>Date of Death</string>
+        </property>
+       </widget>
+       <widget class="QDateEdit" name="dob">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>70</y>
+          <width>281</width>
+          <height>50</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 16pt &quot;MS Shell Dlg 2&quot;;
+background-color:white;
+border-radius:20px;
+color: rgb(122, 122, 122)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
+        </property>
+       </widget>
+       <widget class="QDateEdit" name="dod">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>70</y>
+          <width>281</width>
+          <height>50</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">
+font: 16pt &quot;MS Shell Dlg 2&quot;;
+background-color:white;
+border-radius:20px;
+color: rgb(122, 122, 122)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
+        </property>
+       </widget>
       </widget>
      </widget>
     </widget>
