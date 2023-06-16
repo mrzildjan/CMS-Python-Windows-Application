@@ -165,7 +165,7 @@ background-color: rgb(113, 113, 113)
        </property>
        <property name="geometry">
         <rect>
-         <x>150</x>
+         <x>130</x>
          <y>20</y>
          <width>451</width>
          <height>121</height>
@@ -187,7 +187,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QLineEdit" name="txtfname">
        <property name="geometry">
         <rect>
-         <x>160</x>
+         <x>140</x>
          <y>110</y>
          <width>310</width>
          <height>40</height>
@@ -227,7 +227,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QLineEdit" name="txtlname">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>460</x>
          <y>110</y>
          <width>310</width>
          <height>40</height>
@@ -264,94 +264,15 @@ p, li { white-space: pre-wrap; }
         <string>Last Name</string>
        </property>
       </widget>
-      <widget class="QDateEdit" name="dob">
-       <property name="geometry">
-        <rect>
-         <x>820</x>
-         <y>110</y>
-         <width>200</width>
-         <height>40</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 16pt &quot;MS Shell Dlg 2&quot;;
-background-color:white;
-border-radius:20px;
-color: rgb(122, 122, 122)</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-       <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::NoButtons</enum>
-       </property>
-      </widget>
-      <widget class="QDateEdit" name="dod">
-       <property name="geometry">
-        <rect>
-         <x>1030</x>
-         <y>110</y>
-         <width>200</width>
-         <height>40</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">
-font: 16pt &quot;MS Shell Dlg 2&quot;;
-background-color:white;
-border-radius:20px;
-color: rgb(122, 122, 122)</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-       <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::NoButtons</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label">
-       <property name="geometry">
-        <rect>
-         <x>880</x>
-         <y>80</y>
-         <width>191</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
-color:rgb(143, 143, 143)</string>
-       </property>
-       <property name="text">
-        <string>Date of Birth</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_2">
-       <property name="geometry">
-        <rect>
-         <x>1080</x>
-         <y>80</y>
-         <width>191</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
-color:rgb(143, 143, 143)</string>
-       </property>
-       <property name="text">
-        <string>Date of Death</string>
-       </property>
-      </widget>
       <widget class="QTextEdit" name="txttitle_4">
        <property name="enabled">
         <bool>false</bool>
        </property>
        <property name="geometry">
         <rect>
-         <x>50</x>
+         <x>30</x>
          <y>60</y>
-         <width>821</width>
+         <width>771</width>
          <height>61</height>
         </rect>
        </property>
@@ -371,7 +292,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QPushButton" name="searchbtn">
        <property name="geometry">
         <rect>
-         <x>30</x>
+         <x>10</x>
          <y>110</y>
          <width>110</width>
          <height>40</height>
@@ -396,147 +317,10 @@ color: white;
         <string>Search</string>
        </property>
       </widget>
-      <widget class="QTableWidget" name="record_table">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>220</y>
-         <width>1201</width>
-         <height>291</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>MS Shell Dlg 2</family>
-         <pointsize>18</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">
-font: 18pt &quot;MS Shell Dlg 2&quot;;
-height: 5rem</string>
-       </property>
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="rowCount">
-        <number>3</number>
-       </property>
-       <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>130</number>
-       </attribute>
-       <attribute name="verticalHeaderDefaultSectionSize">
-        <number>60</number>
-       </attribute>
-       <row>
-        <property name="text">
-         <string>1</string>
-        </property>
-       </row>
-       <row/>
-       <row/>
-       <column>
-        <property name="text">
-         <string>ID</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Plot Name</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Plot Row</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Plot Column</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Name</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-          <stylestrategy>PreferDefault</stylestrategy>
-          <kerning>true</kerning>
-         </font>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Date of Birth</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Date of Death</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Interment</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Exhumation</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>13</pointsize>
-         </font>
-        </property>
-       </column>
-      </widget>
       <widget class="QLabel" name="background_3">
        <property name="geometry">
         <rect>
-         <x>40</x>
+         <x>20</x>
          <y>10</y>
          <width>91</width>
          <height>71</height>
@@ -566,6 +350,265 @@ height: 5rem</string>
        <property name="scaledContents">
         <bool>true</bool>
        </property>
+      </widget>
+      <widget class="QTableWidget" name="record_table">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>180</y>
+         <width>1771</width>
+         <height>391</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>8</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+font: 8pt &quot;MS Shell Dlg 2&quot;;
+height: 5rem</string>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="rowCount">
+        <number>0</number>
+       </property>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>125</number>
+       </attribute>
+       <attribute name="verticalHeaderDefaultSectionSize">
+        <number>60</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Plot Yard</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Plot Row</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Plot Column</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>First Name</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+          <stylestrategy>PreferDefault</stylestrategy>
+          <kerning>true</kerning>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Middle Name</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Last Name</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Date of Birth</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Date of Death</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Interment</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Exhumation</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </column>
+      </widget>
+      <widget class="QComboBox" name="search">
+       <property name="geometry">
+        <rect>
+         <x>520</x>
+         <y>20</y>
+         <width>201</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:white;
+font: 14pt &quot;MS Shell Dlg 2&quot;;</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>Search by Name</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Search with Date</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QFrame" name="by_date">
+       <property name="geometry">
+        <rect>
+         <x>780</x>
+         <y>40</y>
+         <width>501</width>
+         <height>131</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>40</y>
+          <width>191</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
+color:rgb(143, 143, 143)</string>
+        </property>
+        <property name="text">
+         <string>Date of Birth</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>290</x>
+          <y>40</y>
+          <width>191</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 13pt &quot;MS Shell Dlg 2&quot;;
+color:rgb(143, 143, 143)</string>
+        </property>
+        <property name="text">
+         <string>Date of Death</string>
+        </property>
+       </widget>
+       <widget class="QDateEdit" name="dob">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>70</y>
+          <width>230</width>
+          <height>40</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 16pt &quot;MS Shell Dlg 2&quot;;
+background-color:white;
+border-radius:20px;
+color: rgb(122, 122, 122)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
+        </property>
+       </widget>
+       <widget class="QDateEdit" name="dod">
+        <property name="geometry">
+         <rect>
+          <x>260</x>
+          <y>70</y>
+          <width>230</width>
+          <height>40</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">
+font: 16pt &quot;MS Shell Dlg 2&quot;;
+background-color:white;
+border-radius:20px;
+color: rgb(122, 122, 122)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
+        </property>
+       </widget>
       </widget>
      </widget>
     </widget>
