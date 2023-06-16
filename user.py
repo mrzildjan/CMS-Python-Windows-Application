@@ -8,7 +8,6 @@ import psycopg2
 from datetime import date, datetime
 
 current_date = date.today()
-current_date_time = datetime.now()
 
 # Define the global variable
 logged_in_username = None
@@ -80,6 +79,22 @@ def get_current_user_id():
     else:
         return None
 
+def retrieve_latest_ids():
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')  # change password
+    cursor = conn.cursor()
+
+    # Retrieve the latest plot_id and rel_id from their respective tables
+    cursor.execute("SELECT plot_id FROM PLOT ORDER BY plot_date DESC LIMIT 1;")
+    latest_plot_id = cursor.fetchone()[0]
+
+    cursor.execute("SELECT MAX(rel_id) FROM RELATIVE;")
+    latest_rel_id = cursor.fetchone()[0]
+
+    cursor.close()
+    conn.close()
+
+    return latest_plot_id, latest_rel_id
+
 def check_plot_existence(plot_yard, plot_row, plot_col):
     plot_id = f"{plot_yard}{plot_row}{plot_col}"
 
@@ -97,7 +112,6 @@ def check_plot_existence(plot_yard, plot_row, plot_col):
 
 def check_plot_status(plot_yard, plot_row, plot_col):
     plot_id = f"{plot_yard}{plot_row}{plot_col}"
-    print(plot_id)
     query = f"SELECT plot_status FROM PLOT WHERE PLOT_ID = '{plot_id}'"
 
     # Execute the query and fetch the result
@@ -531,10 +545,6 @@ class Book_interment(QMainWindow):
         booking_services = Booking_services()
         show_page(booking_services)
 
-    def check_plot_status(self):
-        # code to check plot status for booking interment
-        pass
-
     def display_plot_status(self):
         plot_yard = self.plot_name.currentText()
         plot_row = self.plot_row.currentText()
@@ -583,15 +593,22 @@ class Book_interment(QMainWindow):
             error_message = "Chosen Plot is Unavalable, Please select a different plot."
             show_error_message(error_message)
         else:
+            current_date_time = datetime.now()
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                               VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
-            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, user_id) VALUES ('{current_date}', 500.00, 'Booked', '{user_id}');"
+                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Booked', '{current_date_time}' )"
 
             # Execute the queries
             relative_result = execute_query(relative_query)
             plot_result = execute_query(plot_query)
+
+            latest_plot_id, latest_rel_id = retrieve_latest_ids()
+            print("rel  ", latest_rel_id)
+            print("plot  ",latest_plot_id)
+            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
+                           f"VALUES ('{current_date}', 500.00, 'Booked', '{latest_plot_id}', '{latest_rel_id}', '{user_id}');"
+
             record_result = execute_query(record_query)
 
 
@@ -656,22 +673,26 @@ class Plot_reservation(QMainWindow):
             error_message = "Chosen Plot is Unavalable, Please select a different plot."
             show_error_message(error_message)
         else:
+            current_date_time = datetime.now()
             plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
-            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, user_id) VALUES ('{current_date}', 500.00, 'Reserved', '{user_id}');"
-
+                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Reserved', '{current_date_time}' )"
             # Execute the queries
             plot_result = execute_query(plot_query)
+
+            latest_plot_id, latest_rel_id = retrieve_latest_ids()
+            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, user_id) " \
+                           f"VALUES ('{current_date}', 0.00, 'Reserved', '{latest_plot_id}', '{user_id}');"
+            # Execute the queries
             record_result = execute_query(record_query)
 
             # Check if the queries were successful
             if plot_result and record_result:
                 # Booking successful
-                success_message = "Booking Successful!"
+                success_message = "Reservation Successful!"
                 show_success_message(success_message)
             else:
                 # Error message for failed execution
-                error_message = "Booking Failed, Please try again."
+                error_message = "Reservation Failed, Please try again."
                 show_error_message(error_message)
 
 class Map_view(QMainWindow):
@@ -686,6 +707,47 @@ class Transaction_page(QMainWindow):
         super(Transaction_page, self).__init__()
         loadUi("guimain/transaction.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
+        global user_id
+        user_id = get_current_user_id()
+        self.display_reservations()
+        self.display_bookings()
+
+    def display_reservations(self):
+        query = f"SELECT R.REC_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.rec_lastpay_amount FROM RECORD R INNER JOIN PLOT P USING (PLOT_ID) WHERE R.USER_ID = '{user_id}' AND R.REC_STATUS = 'Reserved' ORDER BY R.REC_ID, P.PLOT_DATE DESC;"
+
+        # Execute the query and fetch the results
+        results = execute_query_fetch(query)
+
+        # Clear the existing table content
+        self.reservation_table.clearContents()
+
+        # Set the table row count to the number of fetched results
+        self.reservation_table.setRowCount(len(results))
+
+        # Populate the table with the fetched results
+        for row_idx, row_data in enumerate(results):
+            for col_idx, col_data in enumerate(row_data):
+                item = QTableWidgetItem(str(col_data))
+                self.reservation_table.setItem(row_idx, col_idx, item)
+
+    def display_bookings(self):
+        query = f"SELECT R.REC_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, RL.REL_FNAME, RL.REL_MNAME, RL.REL_LNAME, RL.rel_dob, RL.rel_date_death FROM PLOT P INNER JOIN RECORD R USING (PLOT_ID) INNER JOIN RELATIVE RL USING (REL_ID) \
+                WHERE R.USER_ID = '{user_id}' AND R.REC_STATUS = 'Booked' ORDER BY R.REC_ID, P.PLOT_DATE DESC;"
+
+        # Ex ecute the query and fetch the results
+        results = execute_query_fetch(query)
+
+        # Clear the existing table content
+        self.booking_table.clearContents()
+
+        # Set the table row count to the number of fetched results
+        self.booking_table.setRowCount(len(results))
+
+        # Populate the table with the fetched results
+        for row_idx, row_data in enumerate(results):
+            for col_idx, col_data in enumerate(row_data):
+                item = QTableWidgetItem(str(col_data))
+                self.booking_table.setItem(row_idx, col_idx, item)
 
 
 class About_us(QMainWindow):
