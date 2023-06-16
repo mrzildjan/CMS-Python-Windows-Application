@@ -1,10 +1,18 @@
+import datetime
 import sys
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from PyQt5.QtGui import QIcon
 import psycopg2
-from datetime import date
+from datetime import date, datetime
+
+current_date = date.today()
+current_date_time = datetime.now()
+
+# Define the global variable
+logged_in_username = None
+logged_in_password = None
 
 def execute_query_fetch(query):
     conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
@@ -58,12 +66,50 @@ def execute_query(query):
         cursor.close()
         conn.close()
 
+def get_current_user_id():
 
-# Get the current date
-current_date = date.today()
-# Define the global variable
-logged_in_username = None
-logged_in_password = None
+    username = logged_in_username
+    password = logged_in_password
+    query = f"SELECT user_id FROM USERS WHERE user_username = '{username}' AND  user_password = '{password}'"
+
+    result = execute_query_fetch(query)
+
+    if result:
+        user_id = result[0][0]
+        return user_id
+    else:
+        return None
+
+def check_plot_existence(plot_yard, plot_row, plot_col):
+    plot_id = f"{plot_yard}{plot_row}{plot_col}"
+
+    # Query to check if the plot ID exists in the PLOT table
+    query = f"SELECT COUNT(*) FROM PLOT WHERE PLOT_ID = '{plot_id}'"
+
+    # Execute the query and fetch the result
+    result = execute_query_fetch(query)
+
+    # Check if the result count is greater than 0
+    if result and result[0][0] > 0:
+        return True  # Plot exists
+    else:
+        return False  # Plot does not exist
+
+def check_plot_status(plot_yard, plot_row, plot_col):
+    plot_id = f"{plot_yard}{plot_row}{plot_col}"
+    print(plot_id)
+    query = f"SELECT plot_status FROM PLOT WHERE PLOT_ID = '{plot_id}'"
+
+    # Execute the query and fetch the result
+    result = execute_query_fetch(query)
+
+    # Check if the result exists and has at least one row
+    if result and len(result) > 0:
+        plot_status = result[0][0]
+        return plot_status  # Return the plot status
+    else:
+        return None  # Plot does not exist
+
 
 def show_page(frame):
     widget.addWidget(frame)
@@ -78,6 +124,18 @@ def show_error_message(message):
     message_box = QtWidgets.QMessageBox()
     message_box.critical(None, "Error", message)
     message_box.setStyleSheet("QMessageBox { background-color: white; }")
+
+def show_success_message(message):
+    message_box = QtWidgets.QMessageBox()
+    message_box.setWindowTitle("Success")
+    message_box.setText(message)
+    icon = QIcon("images/check.png")  # Replace "path/to/icon.png" with the actual path to your icon file
+    message_box.setIconPixmap(icon.pixmap(64, 64))  # Set the icon to a custom pixmap
+
+    ok_button = message_box.addButton(QtWidgets.QMessageBox.Ok)
+    message_box.setDefaultButton(ok_button)
+    message_box = message_box
+    message_box.exec_()
 
 class Login(QMainWindow):
     def __init__(self):
@@ -111,7 +169,7 @@ class Login(QMainWindow):
                 return
 
             # Execute the query to check if username and password exist
-            query = f"SELECT * FROM \"USER\" WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
+            query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
 
             # Fetch the results
             results = execute_query_fetch(query)
@@ -148,18 +206,6 @@ class Register(QMainWindow):
         login = Login()
         show_page(login)
 
-    def show_success_message(self, message):
-        message_box = QtWidgets.QMessageBox()
-        message_box.setWindowTitle("Success")
-        message_box.setText(message)
-        icon = QIcon("images/check.png")  # Replace "path/to/icon.png" with the actual path to your icon file
-        message_box.setIconPixmap(icon.pixmap(64, 64))  # Set the icon to a custom pixmap
-
-        ok_button = message_box.addButton(QtWidgets.QMessageBox.Ok)
-        message_box.setDefaultButton(ok_button)
-        self.message_box = message_box
-        message_box.exec_()
-
     def register_now(self):
         first_name = self.txtfname.text()
         last_name = self.txtlname.text()
@@ -194,8 +240,8 @@ class Register(QMainWindow):
 
             if password == confirmpass:
 
-                # Insert the data into the "USER" table
-                insert_query = f"INSERT INTO \"USER\" (USER_FNAME, USER_MNAME, USER_LNAME, USER_NUMBER, USER_EMAIL, " \
+                # Insert the data into the USERS table
+                insert_query = f"INSERT INTO USERS (USER_FNAME, USER_MNAME, USER_LNAME, USER_NUMBER, USER_EMAIL, " \
                                f"USER_USERNAME, USER_PASSWORD, USER_CREATED_AT, USER_UPDATED_AT) " \
                                f"VALUES ('{first_name}', '{mid_name}', '{last_name}', '{number}', '{address}', " \
                                f"'{username}', '{password}', '{current_date}', '{current_date}')"
@@ -204,7 +250,7 @@ class Register(QMainWindow):
                 if execute_query(insert_query):
                     # Registration successful message
                     success_message = "Registration Successful!"
-                    self.show_success_message(success_message)
+                    show_success_message(success_message)
 
                     # Redirect to login page if OK button is clicked
                     if self.message_box and self.message_box.clickedButton() == self.message_box.button(
@@ -278,48 +324,91 @@ class Plot_locator(QMainWindow):
         super(Plot_locator, self).__init__()
         loadUi("guimain/plot_locator.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
-        self.searchbtn.clicked.connect(self.search_plot)
-        # Set placeholder text for dob and dod QDateEdit widgets
-        # Set display format for dob and dod QDateEdit widgets
+        self.by_date.setVisible(False)
         self.dob.setDisplayFormat("yyyy-MM-dd")
         self.dod.setDisplayFormat("yyyy-MM-dd")
+        self.search.currentTextChanged.connect(self.search_changed)
+        self.searchbtn.clicked.connect(self.perform_search)
 
-    def search_plot(self):
+    def search_changed(self, text):
+        if text == "Search by Name":
+            self.by_date.setVisible(False)
+        else:
+            self.by_date.setVisible(True)
+
+    def perform_search(self):
         txtfname = self.txtfname.text()
         txtlname = self.txtlname.text()
         dob = self.dob.text()
         dod = self.dod.text()
+        search_text = self.search.currentText()
 
-        # Construct the query
-        query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH \
-        FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) \
-        WHERE R.REL_FNAME = '{txtfname}'"
+        if search_text == "Search by Name":
+            # Construct the query
+            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH \
+                    FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) "
 
-        if txtlname:
-            query += f" AND R.REL_LNAME = '{txtlname}'"
+            if txtlname and txtfname:
+                query += f" WHERE R.REL_FNAME = '{txtfname}' AND R.REL_LNAME = '{txtlname}' "
+            elif txtfname:
+                query += f" WHERE R.REL_FNAME = '{txtfname}'"
+            elif txtlname:
+                query += f" WHERE R.REL_LNAME = '{txtlname}'"
 
-        if dob:
-            query += f" AND R.REL_DOB = '{dob}'"
+            query += ";"
 
-        if dod:
-            query += f" AND R.REL_DATE_DEATH = '{dod}'"
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
 
-        query += ";"
+            # Clear the existing table content
+            self.plotlocatortable.clearContents()
 
-        # Execute the query and fetch the results
-        results = execute_query_fetch(query)
+            # Set the table row count to the number of fetched results
+            self.plotlocatortable.setRowCount(len(results))
 
-        # Clear the existing table content
-        self.plotlocatortable.clearContents()
+            # Populate the table with the fetched results
+            for row_idx, row_data in enumerate(results):
+                for col_idx, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.plotlocatortable.setItem(row_idx, col_idx, item)
 
-        # Set the table row count to the number of fetched results
-        self.plotlocatortable.setRowCount(len(results))
+        else:
 
-        # Populate the table with the fetched results
-        for row_idx, row_data in enumerate(results):
-            for col_idx, col_data in enumerate(row_data):
-                item = QTableWidgetItem(str(col_data))
-                self.plotlocatortable.setItem(row_idx, col_idx, item)
+            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH \
+                    FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID)  WHERE "
+            conditions = []
+
+            if txtfname:
+                conditions.append(f"R.REL_FNAME = '{txtfname}'")
+
+            if txtlname:
+                conditions.append(f"R.REL_LNAME = '{txtlname}'")
+
+            if dob:
+                conditions.append(f"R.REL_DOB = '{dob}'")
+
+            if dod:
+                conditions.append(f"R.REL_DATE_DEATH = '{dod}'")
+
+            if conditions:
+                query += " AND ".join(conditions)
+
+            query += ";"
+
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
+
+            # Clear the existing table content
+            self.plotlocatortable.clearContents()
+
+            # Set the table row count to the number of fetched results
+            self.plotlocatortable.setRowCount(len(results))
+
+            # Populate the table with the fetched results
+            for row_idx, row_data in enumerate(results):
+                for col_idx, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.plotlocatortable.setItem(row_idx, col_idx, item)
 
 
 class Search_record(QMainWindow):
@@ -330,24 +419,33 @@ class Search_record(QMainWindow):
         self.by_date.setVisible(False)
         self.dob.setDisplayFormat("yyyy-MM-dd")
         self.dod.setDisplayFormat("yyyy-MM-dd")
-        self.search.currentTextChanged.connect(self.perform)
+        self.search.currentTextChanged.connect(self.search_changed)
+        self.searchbtn.clicked.connect(self.perform_search)
 
-    def perform(self, text):
+    def search_changed(self, text):
+        if text == "Search by Name":
+            self.by_date.setVisible(False)
+        else:
+            self.by_date.setVisible(True)
+
+    def perform_search(self):
         txtfname = self.txtfname.text()
         txtlname = self.txtlname.text()
         dob = self.dob.text()
         dod = self.dod.text()
+        search_text = self.search.currentText()
 
-        if text == "Search by Name":
-            self.by_date.setVisible(False)
-
+        if search_text == "Search by Name":
             # Construct the query
-            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION \
-                            FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) \
-                            WHERE R.REL_FNAME = '{txtfname}'"
+            query = "SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION \
+                     FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID)"
 
-            if txtlname:
-                query += f" AND R.REL_LNAME = '{txtlname}'"
+            if txtlname and txtfname:
+                query += f" WHERE R.REL_FNAME = '{txtfname}' AND R.REL_LNAME = '{txtlname}' "
+            elif txtfname:
+                query += f" WHERE R.REL_FNAME = '{txtfname}'"
+            elif txtlname:
+                query += f" WHERE R.REL_LNAME = '{txtlname}'"
 
             query += ";"
 
@@ -367,19 +465,25 @@ class Search_record(QMainWindow):
                     self.record_table.setItem(row_idx, col_idx, item)
 
         else:
-            self.by_date.setVisible(True)
-
             # Construct the query
-            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION \
-                                        FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) \
-                                        WHERE R.REL_FNAME = '{txtfname}'"
+            query = "SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION \
+                     FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) WHERE "
+            conditions = []
+
+            if txtfname:
+                conditions.append(f"R.REL_FNAME = '{txtfname}'")
 
             if txtlname:
-                query += f" AND R.REL_LNAME = '{txtlname}'"
-            if txtlname:
-                query += f" AND R.REL_LNAME = '{txtlname}'"
-            if txtlname:
-                query += f" AND R.REL_LNAME = '{txtlname}'"
+                conditions.append(f"R.REL_LNAME = '{txtlname}'")
+
+            if dob:
+                conditions.append(f"R.REL_DOB = '{dob}'")
+
+            if dod:
+                conditions.append(f"R.REL_DATE_DEATH = '{dod}'")
+
+            if conditions:
+                query += " AND ".join(conditions)
 
             query += ";"
 
@@ -397,6 +501,7 @@ class Search_record(QMainWindow):
                 for col_idx, col_data in enumerate(row_data):
                     item = QTableWidgetItem(str(col_data))
                     self.record_table.setItem(row_idx, col_idx, item)
+
 
 class Booking_services(QMainWindow):
     def __init__(self):
@@ -420,16 +525,7 @@ class Book_interment(QMainWindow):
         loadUi("guimain/book_interment.ui", self)
         self.backbtn.clicked.connect(self.goto_booking_services)
         self.booknowbtn.clicked.connect(self.book_now)
-        cus_fname = self.cus_fname
-        cus_lname = self.cus_lname
-        mobile = self.mobile
-        address = self.txtaddress
-        dec_fname = self.dec_fname
-        dec_mname = self.dec_mname
-        dec_lname = self.dec_lname
-        dec_dob = self.dec_dob
-        dec_dod = self.dec_dod
-        dec_doi = self.dec_doi
+        self.checkbtn.clicked.connect(self.display_plot_status)
 
     def goto_booking_services(self):
         booking_services = Booking_services()
@@ -439,9 +535,75 @@ class Book_interment(QMainWindow):
         # code to check plot status for booking interment
         pass
 
+    def display_plot_status(self):
+        plot_yard = self.plot_name.currentText()
+        plot_row = self.plot_row.currentText()
+        plot_col = self.plot_col.currentText()
+
+        plot_status = check_plot_status(plot_yard, plot_row, plot_col)
+        if plot_status is not None:
+            self.plot_status.setText(plot_status)
+        else:
+            self.plot_status.setText("Available")
+
     def book_now(self):
-        # code to add the booking
-        pass
+        # Get the values from the UI
+        dec_fname = self.dec_fname.text()
+        dec_mname = self.dec_mname.text()
+        dec_lname = self.dec_lname.text()
+        dec_dob = self.dec_dob.date().toString("yyyy-MM-dd")
+        dec_dod = self.dec_dod.date().toString("yyyy-MM-dd")
+        dec_doi = self.dec_doi.date().toString("yyyy-MM-dd")
+        user_id = get_current_user_id()
+        plot_yard = self.plot_name.currentText()
+        plot_row = self.plot_row.currentText()
+        plot_col = self.plot_col.currentText()
+        plot_status = self.plot_status.text()
+
+        if plot_status == "":
+            error_message = "Please Choose Plot Location"
+            show_error_message(error_message)
+            return
+
+        if any(value == "" for value in
+               [dec_fname, dec_lname, dec_dob, dec_dod, dec_doi, plot_yard, plot_row, plot_col, plot_status]):
+            # Display error message for null values
+            error_message = "Please fill in all fields."
+            show_error_message(error_message)
+            return
+
+        if not (dec_fname.isalpha() and dec_lname.isalpha() and (dec_mname == "" or dec_mname.isalpha())):
+            # Display error message for non-letter values
+            error_message = "Name fields should only contain letters."
+            show_error_message(error_message)
+            return
+
+        # Check if the plot already exists
+        if check_plot_existence(plot_yard, plot_row, plot_col):
+            error_message = "Chosen Plot is Unavalable, Please select a different plot."
+            show_error_message(error_message)
+        else:
+            relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                              VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+            plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
+                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
+            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, user_id) VALUES ('{current_date}', 500.00, 'Booked', '{user_id}');"
+
+            # Execute the queries
+            relative_result = execute_query(relative_query)
+            plot_result = execute_query(plot_query)
+            record_result = execute_query(record_query)
+
+
+            # Check if the queries were successful
+            if relative_result and plot_result and record_result:
+                # Booking successful
+                success_message = "Booking Successful!"
+                show_success_message(success_message)
+            else:
+                # Error message for failed execution
+                error_message = "Booking Failed, Please try again."
+                show_error_message(error_message)
 
 
 class Plot_reservation(QMainWindow):
@@ -449,31 +611,68 @@ class Plot_reservation(QMainWindow):
         super(Plot_reservation, self).__init__()
         loadUi("guimain/plot_reservation.ui", self)
         self.backbtn.clicked.connect(self.goto_booking_services)
-        self.checkbtn.clicked.connect(self.check_plot_status)
+        self.checkbtn.clicked.connect(self.display_plot_status)
         self.reservebtn.clicked.connect(self.reservenow)
-        txtfname = self.txtfname
-        txtlname = self.txtlname
-        mobile = self.mobile
-        address = self.txtaddress
-        plot_name = self.plot_name
-        plot_row = self.plot_row
-        plot_column = self.plot_column
-        plot_status = self.plot_status
-        plot_price = self.plot_price
-
 
 
     def goto_booking_services(self):
         booking_services = Booking_services()
         show_page(booking_services)
 
-    def check_plot_status(self):
-        # code to check plot status
-        pass
+    def display_plot_status(self):
+        plot_yard = self.plot_yard.currentText()
+        plot_row = self.plot_row.currentText()
+        plot_col = self.plot_col.currentText()
+
+        plot_status = check_plot_status(plot_yard, plot_row, plot_col)
+
+        if plot_status is not None:
+            self.plot_status.setText(plot_status)
+        else:
+            self.plot_status.setText("Available")
 
     def reservenow(self):
-        # code to add the reservation
-        pass
+        # Get the values from the UI
+        plot_yard = self.plot_yard.currentText()
+        plot_row = self.plot_row.currentText()
+        plot_col = self.plot_col.currentText()
+        plot_status = self.plot_status.text()
+        user_id = get_current_user_id()
+
+        if plot_status == "":
+            error_message = "Please Choose Plot Location"
+            show_error_message(error_message)
+            return
+
+        if any(value == "" for value in
+               [plot_yard, plot_row, plot_col, plot_status]):
+            # Display error message for null values
+            error_message = "Please fill in all fields."
+            show_error_message(error_message)
+            return
+
+        # Check if the plot already exists
+        if check_plot_existence(plot_yard, plot_row, plot_col):
+            error_message = "Chosen Plot is Unavalable, Please select a different plot."
+            show_error_message(error_message)
+        else:
+            plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
+                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
+            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, user_id) VALUES ('{current_date}', 500.00, 'Reserved', '{user_id}');"
+
+            # Execute the queries
+            plot_result = execute_query(plot_query)
+            record_result = execute_query(record_query)
+
+            # Check if the queries were successful
+            if plot_result and record_result:
+                # Booking successful
+                success_message = "Booking Successful!"
+                show_success_message(success_message)
+            else:
+                # Error message for failed execution
+                error_message = "Booking Failed, Please try again."
+                show_error_message(error_message)
 
 class Map_view(QMainWindow):
     def __init__(self):
