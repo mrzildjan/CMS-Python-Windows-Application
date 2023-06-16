@@ -66,3 +66,37 @@ CREATE TABLE RECORD (
   FOREIGN KEY (REL_ID) REFERENCES RELATIVE (REL_ID) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (PLOT_ID) REFERENCES PLOT (PLOT_ID) ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+
+
+TRIGGERS
+=========================================================================================
+
+CREATE OR REPLACE FUNCTION update_rel_date_exhumation()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    NEW.rel_date_exhumation := NEW.rel_date_death + INTERVAL '5 years';
+    RETURN NEW;
+END;
+$$
+LANGUAGE PLPGSQL;
+
+CREATE TRIGGER trgr_update_rel_date_exhumation
+    BEFORE INSERT ON RELATIVE
+    FOR EACH ROW
+    EXECUTE FUNCTION update_rel_date_exhumation();
+
+
+
+ALTER TABLE RECORD
+ALTER COLUMN rec_lastpay_date NOT NULL,
+ALTER COLUMN rec_lastpay_amount NOT NULL;
+
+UPDATE RECORD
+SET rec_lastpay_date  = CURRENT_DATE,
+SET rec_lastpay_amount = 500.00
+WHERE REC_ID = 105;
+
+
+=========================================================================================
