@@ -631,6 +631,8 @@ border-radius:0px;
   background-color:white;
   border-radius: 20px;
   transition: box-shadow 0.3s;
+color:red;
+
 }
 
 #plot_status:hover {
