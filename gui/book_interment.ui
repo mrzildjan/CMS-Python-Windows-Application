@@ -583,6 +583,7 @@ color:rgb(143, 143, 143)</string>
   background-color:white;
   border-radius: 20px;
   transition: box-shadow 0.3s;
+color:red;
 }
 
 #plot_status:hover {
