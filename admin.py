@@ -1,3 +1,4 @@
+# delete this later
 import datetime
 import sys
 
@@ -16,7 +17,6 @@ current_date = date.today()
 # Define the global variable
 logged_in_username = None
 logged_in_password = None
-
 
 def execute_query_fetch(query):
     conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
