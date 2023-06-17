@@ -15,7 +15,7 @@ logged_in_username = None
 logged_in_password = None
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -41,7 +41,7 @@ def execute_query_fetch(query):
         conn.close()
 
 def execute_query(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -183,8 +183,9 @@ class Login(QMainWindow):
                 show_error_message(error_message)
                 return
 
-            # Execute the query to check if username and password exist
-            query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
+            # Query to check if username and password exist and user_is_admin and is_account_admin are True
+            query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}' " \
+                    f"AND USER_IS_ADMIN = 'f'"
 
             # Fetch the results
             results = execute_query_fetch(query)
@@ -199,8 +200,16 @@ class Login(QMainWindow):
                 self.goto_dashboard()
 
             else:
-                # Invalid login, show error message
-                error_message = "Invalid username or password. Please try again."
+                # If no matching row found, then either the user credentials are invalid or the account is not admin
+                # Check if the issue is with admin access
+                query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
+                results = execute_query_fetch(query)
+                if results:
+                    error_message = "Your account is admin. Please use the admin dashboard."
+                else:
+                    # Invalid login, show error message
+                    error_message = "Invalid username or password. Please try again."
+
                 show_error_message(error_message)
 
         except Exception as e:
@@ -226,7 +235,7 @@ class Register(QMainWindow):
         last_name = self.txtlname.text()
         mid_name = self.txtmid.text()
         number = self.txtnumber.text()
-        address = self.txtaddress.text()
+        address = self.txtaddress.text().lower()
         username = self.txtusername.text()
         password = self.txtpass.text()
         confirmpass = self.txtconfirm.text()
@@ -362,8 +371,8 @@ class Plot_locator(QMainWindow):
 
         if search_text == "Search by Name":
             # Construct the query
-            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH \
-                    FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) "
+            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, " \
+                    f"R.REL_DATE_DEATH FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID)"
 
             if txtlname and txtfname:
                 query += f" WHERE R.REL_FNAME = '{txtfname}' AND R.REL_LNAME = '{txtlname}' "
@@ -641,7 +650,7 @@ class Plot_reservation(QMainWindow):
         show_page(booking_services)
 
     def display_plot_status(self):
-        plot_yard = self.plot_name.currentText()
+        plot_yard = self.plot_yard.currentText()
         plot_row = self.plot_row.currentText()
         plot_col = self.plot_col.currentText()
 
@@ -718,7 +727,9 @@ class Transaction_page(QMainWindow):
         self.display_bookings()
 
     def display_reservations(self):
-        query = f"SELECT R.REC_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.rec_lastpay_amount FROM RECORD R INNER JOIN PLOT P USING (PLOT_ID) WHERE R.USER_ID = '{user_id}' AND R.REC_STATUS = 'Reserved' ORDER BY R.REC_ID, P.PLOT_DATE DESC;"
+        query = f"SELECT R.REC_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.rec_lastpay_amount FROM RECORD R " \
+                f"INNER JOIN PLOT P USING (PLOT_ID) " \
+                f"WHERE R.USER_ID = '{user_id}' AND R.REC_STATUS = 'Reserved' ORDER BY R.REC_ID, P.PLOT_DATE DESC;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
