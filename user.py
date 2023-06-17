@@ -15,7 +15,7 @@ logged_in_username = None
 logged_in_password = None
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -183,8 +183,9 @@ class Login(QMainWindow):
                 show_error_message(error_message)
                 return
 
-            # Execute the query to check if username and password exist
-            query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
+            # Query to check if username and password exist and user_is_admin and is_account_admin are True
+            query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}' " \
+                    f"AND USER_IS_ADMIN = 'f'"
 
             # Fetch the results
             results = execute_query_fetch(query)
@@ -199,8 +200,16 @@ class Login(QMainWindow):
                 self.goto_dashboard()
 
             else:
-                # Invalid login, show error message
-                error_message = "Invalid username or password. Please try again."
+                # If no matching row found, then either the user credentials are invalid or the account is not admin
+                # Check if the issue is with admin access
+                query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
+                results = execute_query_fetch(query)
+                if results:
+                    error_message = "Your account is admin. Please use the admin dashboard."
+                else:
+                    # Invalid login, show error message
+                    error_message = "Invalid username or password. Please try again."
+
                 show_error_message(error_message)
 
         except Exception as e:
