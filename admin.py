@@ -553,8 +553,7 @@ class Reservation_page(QMainWindow):
             show_error_message(error_message)
             return
 
-        if any(value == "" for value in
-               [plot_yard, plot_row, plot_col, plot_status]):
+        if any(value == "" for value in [plot_yard, plot_row, plot_col, plot_status]):
             # Display error message for null values
             error_message = "Please fill in all fields."
             show_error_message(error_message)
@@ -568,23 +567,34 @@ class Reservation_page(QMainWindow):
             current_date_time = datetime.now()
             plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
                           VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Reserved', '{current_date_time}' )"
-            # Execute the queries
+
+            # Execute the plot query
             plot_result = execute_query(plot_query)
 
-            latest_plot_id, latest_rel_id = retrieve_latest_ids()
-            transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
-                                f"VALUES ( 'Reserved'  , 'Pending' , '{current_date}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
+            if plot_result:
+                latest_plot_id, latest_rel_id = retrieve_latest_ids()
 
-            # Execute the queries
-            transaction_result = execute_query(transaction_query)
+                transaction_query = f"INSERT INTO TRANSACTION (trans_type, trans_status, trans_date, user_id, plot_id)"
 
-            # Check if the queries were successful
-            if plot_result and transaction_result:
-                # Booking successful
-                success_message = "Reservation Successful!"
-                show_success_message(success_message)
+                if latest_rel_id is not None:
+                    transaction_query += f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', '{latest_plot_id}')"
+                else:
+                    transaction_query += f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', NULL)"
 
-                self.goto_booking_services()
+                # Execute the transaction query
+                transaction_result = execute_query(transaction_query)
+
+                # Check if the queries were successful
+                if transaction_result:
+                    # Booking successful
+                    success_message = "Reservation Successful!"
+                    show_success_message(success_message)
+
+                    self.goto_reservation_management()
+                else:
+                    # Error message for failed execution
+                    error_message = "Reservation Failed, Please try again."
+                    show_error_message(error_message)
             else:
                 # Error message for failed execution
                 error_message = "Reservation Failed, Please try again."
@@ -693,7 +703,7 @@ class Booking_page(QMainWindow):
                 success_message = "Booking Successful!"
                 show_success_message(success_message)
 
-                self.goto_booking_services()
+                self.goto_booking_management()
             else:
                 # Error message for failed execution
                 error_message = "Booking Failed, Please try again."
