@@ -226,7 +226,7 @@ class Register(QMainWindow):
         last_name = self.txtlname.text()
         mid_name = self.txtmid.text()
         number = self.txtnumber.text()
-        address = self.txtaddress.text()
+        address = self.txtaddress.text().lower()
         username = self.txtusername.text()
         password = self.txtpass.text()
         confirmpass = self.txtconfirm.text()
