@@ -330,7 +330,7 @@ background-color:rgb(180, 0, 0)
 </string>
       </property>
       <property name="text">
-       <string>Booking Management</string>
+       <string>View Transactions</string>
       </property>
      </widget>
     </widget>
