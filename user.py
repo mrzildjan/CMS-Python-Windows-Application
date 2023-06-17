@@ -371,8 +371,8 @@ class Plot_locator(QMainWindow):
 
         if search_text == "Search by Name":
             # Construct the query
-            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH \
-                    FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) "
+            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, " \
+                    f"R.REL_DATE_DEATH FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID)"
 
             if txtlname and txtfname:
                 query += f" WHERE R.REL_FNAME = '{txtfname}' AND R.REL_LNAME = '{txtlname}' "
@@ -727,7 +727,9 @@ class Transaction_page(QMainWindow):
         self.display_bookings()
 
     def display_reservations(self):
-        query = f"SELECT R.REC_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.rec_lastpay_amount FROM RECORD R INNER JOIN PLOT P USING (PLOT_ID) WHERE R.USER_ID = '{user_id}' AND R.REC_STATUS = 'Reserved' ORDER BY R.REC_ID, P.PLOT_DATE DESC;"
+        query = f"SELECT R.REC_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.rec_lastpay_amount FROM RECORD R " \
+                f"INNER JOIN PLOT P USING (PLOT_ID) " \
+                f"WHERE R.USER_ID = '{user_id}' AND R.REC_STATUS = 'Reserved' ORDER BY R.REC_ID, P.PLOT_DATE DESC;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
