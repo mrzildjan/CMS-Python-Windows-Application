@@ -5,6 +5,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from PyQt5.QtGui import QIcon
 import psycopg2
+import re
 from datetime import date, datetime
 
 current_date = date.today()
@@ -14,7 +15,7 @@ logged_in_username = None
 logged_in_password = None
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
     cursor = conn.cursor()
 
     try:
@@ -40,7 +41,7 @@ def execute_query_fetch(query):
         conn.close()
 
 def execute_query(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
     cursor = conn.cursor()
 
     try:
@@ -80,7 +81,7 @@ def get_current_user_id():
         return None
 
 def retrieve_latest_ids():
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')  # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')  # change password
     cursor = conn.cursor()
 
     # Retrieve the latest plot_id and rel_id from their respective tables
@@ -154,7 +155,7 @@ def show_success_message(message):
 class Login(QMainWindow):
     def __init__(self):
         super(Login, self).__init__()
-        loadUi("guimain/login.ui", self)
+        loadUi("gui/login.ui", self)
         self.registerbtn.clicked.connect(self.goto_registration_page)
         self.loginbtn.clicked.connect(self.login)
 
@@ -211,7 +212,7 @@ class Login(QMainWindow):
 class Register(QMainWindow):
     def __init__(self):
         super(Register, self).__init__()
-        loadUi("guimain/registration.ui", self)
+        loadUi("gui/registration.ui", self)
         self.registerbtn.clicked.connect(self.register_now)
         self.backbtn.clicked.connect(self.goto_login_page)
         self.message_box = None
@@ -232,14 +233,13 @@ class Register(QMainWindow):
 
         try:
             # Check for null values in input fields
-            if any(value == "" for value in
-                   [first_name, last_name, number, address, username, password, confirmpass]):
+            if any(value == "" for value in [first_name, last_name, number, address, username, password, confirmpass]):
                 # Display error message for null values
                 error_message = "Please fill in all fields."
                 show_error_message(error_message)
                 return
 
-            if not (first_name.isalpha() and last_name.isalpha() and (mid_name == "" or mid_name.isalpha())):
+            if not (first_name.replace(" ", "").isalpha() and last_name.isalpha() and (mid_name == "" or mid_name.isalpha())):
                 # Display error message for non-letter values
                 error_message = "Name fields should only contain letters."
                 show_error_message(error_message)
@@ -252,8 +252,14 @@ class Register(QMainWindow):
                 show_error_message(error_message)
                 return
 
-            if password == confirmpass:
+            # Validate email address
+            email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+            if not re.match(email_regex, address):
+                error_message = "Invalid email address. Please enter a valid email."
+                show_error_message(error_message)
+                return
 
+            if password == confirmpass:
                 # Insert the data into the USERS table
                 insert_query = f"INSERT INTO USERS (USER_FNAME, USER_MNAME, USER_LNAME, USER_NUMBER, USER_EMAIL, " \
                                f"USER_USERNAME, USER_PASSWORD, USER_CREATED_AT, USER_UPDATED_AT) " \
@@ -266,10 +272,7 @@ class Register(QMainWindow):
                     success_message = "Registration Successful!"
                     show_success_message(success_message)
 
-                    # Redirect to login page if OK button is clicked
-                    if self.message_box and self.message_box.clickedButton() == self.message_box.button(
-                            QtWidgets.QMessageBox.Ok):
-                        self.goto_login_page()
+                    self.goto_login_page()
                 else:
                     # Error message for failed execution
                     error_message = "Registration failed. Please try again."
@@ -288,7 +291,7 @@ class Register(QMainWindow):
 class UserDash(QMainWindow):
     def __init__(self):
         super(UserDash, self).__init__()
-        loadUi("guimain/userdash.ui", self)
+        loadUi("gui/userdash.ui", self)
         self.plotlocatorbtn.clicked.connect(self.goto_plot_locator_page)
         self.searchrecordbtn.clicked.connect(self.goto_search_record_page)
         self.bookbtn.clicked.connect(self.goto_booking_services)
@@ -336,7 +339,7 @@ class UserDash(QMainWindow):
 class Plot_locator(QMainWindow):
     def __init__(self):
         super(Plot_locator, self).__init__()
-        loadUi("guimain/plot_locator.ui", self)
+        loadUi("gui/plot_locator.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
         self.by_date.setVisible(False)
         self.dob.setDisplayFormat("yyyy-MM-dd")
@@ -428,7 +431,7 @@ class Plot_locator(QMainWindow):
 class Search_record(QMainWindow):
     def __init__(self):
         super(Search_record, self).__init__()
-        loadUi("guimain/search_record.ui", self)
+        loadUi("gui/search_record.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
         self.by_date.setVisible(False)
         self.dob.setDisplayFormat("yyyy-MM-dd")
@@ -520,7 +523,7 @@ class Search_record(QMainWindow):
 class Booking_services(QMainWindow):
     def __init__(self):
         super(Booking_services, self).__init__()
-        loadUi("guimain/bookservices.ui", self)
+        loadUi("gui/bookservices.ui", self)
         self.bookforintermentbtn.clicked.connect(self.goto_book_interment)
         self.plotreservationbtn.clicked.connect(self.goto_plot_reservation)
         self.backbtn.clicked.connect(goto_user_dash)
@@ -536,7 +539,7 @@ class Booking_services(QMainWindow):
 class Book_interment(QMainWindow):
     def __init__(self):
         super(Book_interment, self).__init__()
-        loadUi("guimain/book_interment.ui", self)
+        loadUi("gui/book_interment.ui", self)
         self.backbtn.clicked.connect(self.goto_booking_services)
         self.booknowbtn.clicked.connect(self.book_now)
         self.checkbtn.clicked.connect(self.display_plot_status)
@@ -582,7 +585,7 @@ class Book_interment(QMainWindow):
             show_error_message(error_message)
             return
 
-        if not (dec_fname.isalpha() and dec_lname.isalpha() and (dec_mname == "" or dec_mname.isalpha())):
+        if not (dec_fname.replace(" ", "").isalpha() and dec_lname.isalpha() and (dec_mname == "" or dec_mname.isalpha())):
             # Display error message for non-letter values
             error_message = "Name fields should only contain letters."
             show_error_message(error_message)
@@ -590,7 +593,7 @@ class Book_interment(QMainWindow):
 
         # Check if the plot already exists
         if check_plot_existence(plot_yard, plot_row, plot_col):
-            error_message = "Chosen Plot is Unavalable, Please select a different plot."
+            error_message = "Chosen Plot is Unavailable, Please select a different plot."
             show_error_message(error_message)
         else:
             current_date_time = datetime.now()
@@ -611,12 +614,13 @@ class Book_interment(QMainWindow):
 
             record_result = execute_query(record_query)
 
-
             # Check if the queries were successful
             if relative_result and plot_result and record_result:
                 # Booking successful
                 success_message = "Booking Successful!"
                 show_success_message(success_message)
+
+                self.goto_booking_services()
             else:
                 # Error message for failed execution
                 error_message = "Booking Failed, Please try again."
@@ -626,10 +630,10 @@ class Book_interment(QMainWindow):
 class Plot_reservation(QMainWindow):
     def __init__(self):
         super(Plot_reservation, self).__init__()
-        loadUi("guimain/plot_reservation.ui", self)
+        loadUi("gui/plot_reservation.ui", self)
         self.backbtn.clicked.connect(self.goto_booking_services)
         self.checkbtn.clicked.connect(self.display_plot_status)
-        self.reservebtn.clicked.connect(self.reservenow)
+        self.reservebtn.clicked.connect(self.reserve_now)
 
 
     def goto_booking_services(self):
@@ -637,18 +641,17 @@ class Plot_reservation(QMainWindow):
         show_page(booking_services)
 
     def display_plot_status(self):
-        plot_yard = self.plot_yard.currentText()
+        plot_yard = self.plot_name.currentText()
         plot_row = self.plot_row.currentText()
         plot_col = self.plot_col.currentText()
 
         plot_status = check_plot_status(plot_yard, plot_row, plot_col)
-
         if plot_status is not None:
             self.plot_status.setText(plot_status)
         else:
             self.plot_status.setText("Available")
 
-    def reservenow(self):
+    def reserve_now(self):
         # Get the values from the UI
         plot_yard = self.plot_yard.currentText()
         plot_row = self.plot_row.currentText()
@@ -670,7 +673,7 @@ class Plot_reservation(QMainWindow):
 
         # Check if the plot already exists
         if check_plot_existence(plot_yard, plot_row, plot_col):
-            error_message = "Chosen Plot is Unavalable, Please select a different plot."
+            error_message = "Chosen Plot is Unavailable, Please select a different plot."
             show_error_message(error_message)
         else:
             current_date_time = datetime.now()
@@ -690,6 +693,8 @@ class Plot_reservation(QMainWindow):
                 # Booking successful
                 success_message = "Reservation Successful!"
                 show_success_message(success_message)
+
+                self.goto_booking_services()
             else:
                 # Error message for failed execution
                 error_message = "Reservation Failed, Please try again."
@@ -698,14 +703,14 @@ class Plot_reservation(QMainWindow):
 class Map_view(QMainWindow):
     def __init__(self):
         super(Map_view, self).__init__()
-        loadUi("guimain/map.ui", self)
+        loadUi("gui/map.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
 
 
 class Transaction_page(QMainWindow):
     def __init__(self):
         super(Transaction_page, self).__init__()
-        loadUi("guimain/transaction.ui", self)
+        loadUi("gui/transaction.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
         global user_id
         user_id = get_current_user_id()
@@ -753,7 +758,7 @@ class Transaction_page(QMainWindow):
 class About_us(QMainWindow):
     def __init__(self):
         super(About_us, self).__init__()
-        loadUi("guimain/aboutus.ui", self)
+        loadUi("gui/aboutus.ui", self)
         self.backbtn.clicked.connect(goto_user_dash)
 
 
