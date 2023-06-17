@@ -15,7 +15,7 @@ logged_in_username = None
 logged_in_password = None
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
     cursor = conn.cursor()
 
     try:
@@ -41,7 +41,7 @@ def execute_query_fetch(query):
         conn.close()
 
 def execute_query(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
     cursor = conn.cursor()
 
     try:
@@ -183,9 +183,8 @@ class Login(QMainWindow):
                 show_error_message(error_message)
                 return
 
-            # Query to check if username and password exist and user_is_admin and is_account_admin are True
-            query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}' " \
-                    f"AND USER_IS_ADMIN = 'f'"
+            # Execute the query to check if username and password exist
+            query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
 
             # Fetch the results
             results = execute_query_fetch(query)
@@ -200,16 +199,8 @@ class Login(QMainWindow):
                 self.goto_dashboard()
 
             else:
-                # If no matching row found, then either the user credentials are invalid or the account is not admin
-                # Check if the issue is with admin access
-                query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
-                results = execute_query_fetch(query)
-                if results:
-                    error_message = "Your account is admin. Please use the admin dashboard."
-                else:
-                    # Invalid login, show error message
-                    error_message = "Invalid username or password. Please try again."
-
+                # Invalid login, show error message
+                error_message = "Invalid username or password. Please try again."
                 show_error_message(error_message)
 
         except Exception as e:
@@ -235,7 +226,7 @@ class Register(QMainWindow):
         last_name = self.txtlname.text()
         mid_name = self.txtmid.text()
         number = self.txtnumber.text()
-        address = self.txtaddress.text().lower()
+        address = self.txtaddress.text()
         username = self.txtusername.text()
         password = self.txtpass.text()
         confirmpass = self.txtconfirm.text()
@@ -371,8 +362,8 @@ class Plot_locator(QMainWindow):
 
         if search_text == "Search by Name":
             # Construct the query
-            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, " \
-                    f"R.REL_DATE_DEATH FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID)"
+            query = f"SELECT P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH \
+                    FROM PLOT P INNER JOIN RECORD USING(PLOT_ID) INNER JOIN RELATIVE R USING(REL_ID) "
 
             if txtlname and txtfname:
                 query += f" WHERE R.REL_FNAME = '{txtfname}' AND R.REL_LNAME = '{txtlname}' "
@@ -621,10 +612,14 @@ class Book_interment(QMainWindow):
             record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
                            f"VALUES ('{current_date}', 500.00, 'Booked', '{latest_plot_id}', '{latest_rel_id}', '{user_id}');"
 
+            transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
+                                f"VALUES ( 'Booked'  , 'Fully Paid' , '{current_date}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
+
             record_result = execute_query(record_query)
+            transaction_result = execute_query(transaction_query)
 
             # Check if the queries were successful
-            if relative_result and plot_result and record_result:
+            if relative_result and plot_result and record_result and transaction_result:
                 # Booking successful
                 success_message = "Booking Successful!"
                 show_success_message(success_message)
@@ -692,13 +687,14 @@ class Plot_reservation(QMainWindow):
             plot_result = execute_query(plot_query)
 
             latest_plot_id, latest_rel_id = retrieve_latest_ids()
-            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, user_id) " \
-                           f"VALUES ('{current_date}', 0.00, 'Reserved', '{latest_plot_id}', '{user_id}');"
+            transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
+                                f"VALUES ( 'Reserved'  , 'Pending' , '{current_date}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
+
             # Execute the queries
-            record_result = execute_query(record_query)
+            transaction_result = execute_query(transaction_query)
 
             # Check if the queries were successful
-            if plot_result and record_result:
+            if plot_result and transaction_result:
                 # Booking successful
                 success_message = "Reservation Successful!"
                 show_success_message(success_message)
@@ -727,9 +723,8 @@ class Transaction_page(QMainWindow):
         self.display_bookings()
 
     def display_reservations(self):
-        query = f"SELECT R.REC_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.rec_lastpay_amount FROM RECORD R " \
-                f"INNER JOIN PLOT P USING (PLOT_ID) " \
-                f"WHERE R.USER_ID = '{user_id}' AND R.REC_STATUS = 'Reserved' ORDER BY R.REC_ID, P.PLOT_DATE DESC;"
+        query = f"SELECT T.TRANS_ID , P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, T.TRANS_STATUS FROM TRANSACTION T INNER JOIN PLOT P USING (PLOT_ID) \
+                WHERE T.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Reserved' ORDER BY T.TRANS_ID,  P.PLOT_DATE DESC;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
@@ -747,10 +742,10 @@ class Transaction_page(QMainWindow):
                 self.reservation_table.setItem(row_idx, col_idx, item)
 
     def display_bookings(self):
-        query = f"SELECT R.REC_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, RL.REL_FNAME, RL.REL_MNAME, RL.REL_LNAME, RL.rel_dob, RL.rel_date_death FROM PLOT P INNER JOIN RECORD R USING (PLOT_ID) INNER JOIN RELATIVE RL USING (REL_ID) \
-                WHERE R.USER_ID = '{user_id}' AND R.REC_STATUS = 'Booked' ORDER BY R.REC_ID, P.PLOT_DATE DESC;"
+        query = f"SELECT T.TRANS_ID , P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, RL.REL_FNAME, RL.REL_MNAME, RL.REL_LNAME, RL.rel_dob, RL.rel_date_death FROM PLOT P \
+                INNER JOIN TRANSACTION T USING (PLOT_ID) INNER JOIN RELATIVE RL USING (REL_ID) WHERE T.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Booked' ORDER BY T.TRANS_ID, P.PLOT_DATE DESC;"
 
-        # Ex ecute the query and fetch the results
+        # Execute the query and fetch the results
         results = execute_query_fetch(query)
 
         # Clear the existing table content
