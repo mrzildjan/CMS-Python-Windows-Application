@@ -1,8 +1,11 @@
 import datetime
 import sys
+
+from PyQt5.QtCore import Qt
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QWidget, QComboBox, \
+    QHBoxLayout
 from PyQt5.QtGui import QIcon
 import psycopg2
 import re
@@ -13,6 +16,7 @@ current_date = date.today()
 # Define the global variable
 logged_in_username = None
 logged_in_password = None
+
 
 def execute_query_fetch(query):
     conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
@@ -40,6 +44,7 @@ def execute_query_fetch(query):
         cursor.close()
         conn.close()
 
+
 def execute_query(query):
     conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
     cursor = conn.cursor()
@@ -66,8 +71,8 @@ def execute_query(query):
         cursor.close()
         conn.close()
 
-def get_current_user_id():
 
+def get_current_user_id():
     username = logged_in_username
     password = logged_in_password
     query = f"SELECT user_id FROM USERS WHERE user_username = '{username}' AND  user_password = '{password}'"
@@ -80,8 +85,10 @@ def get_current_user_id():
     else:
         return None
 
+
 def retrieve_latest_ids():
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')  # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password',
+                            dbname='cms')  # change password
     cursor = conn.cursor()
 
     # Retrieve the latest plot_id and rel_id from their respective tables
@@ -95,6 +102,7 @@ def retrieve_latest_ids():
     conn.close()
 
     return latest_plot_id, latest_rel_id
+
 
 def check_plot_existence(plot_yard, plot_row, plot_col):
     plot_id = f"{plot_yard}{plot_row}{plot_col}"
@@ -111,6 +119,7 @@ def check_plot_existence(plot_yard, plot_row, plot_col):
     else:
         return False  # Plot does not exist
 
+
 def check_plot_status(plot_yard, plot_row, plot_col):
     plot_id = f"{plot_yard}{plot_row}{plot_col}"
     query = f"SELECT plot_status FROM PLOT WHERE PLOT_ID = '{plot_id}'"
@@ -125,18 +134,22 @@ def check_plot_status(plot_yard, plot_row, plot_col):
     else:
         return None  # Plot does not exist
 
+
 def show_page(frame):
     widget.addWidget(frame)
     widget.setCurrentIndex(widget.currentIndex() + 1)
+
 
 def goto_admin_dash():
     admin_dash = AdminDash()
     show_page(admin_dash)
 
+
 def show_error_message(message):
     message_box = QtWidgets.QMessageBox()
     message_box.critical(None, "Error", message)
     message_box.setStyleSheet("QMessageBox { background-color: white; }")
+
 
 def show_success_message(message):
     message_box = QtWidgets.QMessageBox()
@@ -149,6 +162,15 @@ def show_success_message(message):
     message_box.setDefaultButton(ok_button)
     message_box = message_box
     message_box.exec_()
+
+
+def show_message_box(message):
+    msg_box = QMessageBox()
+    msg_box.setIcon(QMessageBox.Information)
+    msg_box.setText(message)
+    msg_box.setWindowTitle("Information")
+    msg_box.exec_()
+
 
 class Login(QMainWindow):
     def __init__(self):
@@ -245,7 +267,8 @@ class Register(QMainWindow):
                 show_error_message(error_message)
                 return
 
-            if not (first_name.replace(" ", "").isalpha() and last_name.isalpha() and (mid_name == "" or mid_name.isalpha())):
+            if not (first_name.replace(" ", "").isalpha() and last_name.isalpha() and (
+                    mid_name == "" or mid_name.isalpha())):
                 # Display error message for non-letter values
                 error_message = "Name fields should only contain letters."
                 show_error_message(error_message)
@@ -293,6 +316,7 @@ class Register(QMainWindow):
             # Error message in case of failure
             QtWidgets.QMessageBox.critical(self, "Error", f"Registration Failed!\n\nError Message: {str(error)}")
 
+
 class AdminDash(QMainWindow):
     def __init__(self):
         super(AdminDash, self).__init__()
@@ -328,6 +352,7 @@ class AdminDash(QMainWindow):
         login = Login()
         show_page(login)
 
+
 class Record_management(QMainWindow):
     def __init__(self):
         super(Record_management, self).__init__()
@@ -339,10 +364,10 @@ class Record_management(QMainWindow):
         dob = self.dob
         dod = self.dod
 
-
     def goto_add_record_page(self):
         add_record = Add_record()
         show_page(add_record)
+
 
 class Add_record(QMainWindow):
     def __init__(self):
@@ -374,34 +399,109 @@ class Add_record(QMainWindow):
         # code to add the dead record to the database
         pass
 
+
 class Plot_management(QMainWindow):
     def __init__(self):
         super(Plot_management, self).__init__()
         loadUi("gui/plot_management.ui", self)
         self.backbtn.clicked.connect(self.goto_admin_dash)
-        self.plot_name = self.plot_name_filter
+        self.plot_name_filter.currentTextChanged.connect(self.display_plot)
+        global plot_yard
+        plot_yard = self.plot_name_filter.currentText()
+        self.display_plot(plot_yard)
 
     def goto_admin_dash(self):
         admin_dash = AdminDash()
         show_page(admin_dash)
 
-    def display_plot(self):
-        query = f"SELECT PLOT_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, PLOT_STATUS, PLOT_DATE FROM PLOT WHERE PLOT_YARD LIKE '%{self.plot_name}%';"
+    def display_plot(self, plot_yard):
+        query = f"SELECT PLOT_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, PLOT_STATUS FROM PLOT WHERE PLOT_YARD = '{plot_yard}';"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
 
-        # Clear the existing table content
-        self.plot_table.clearContents()
+        if not results:
+            message = 'No results found'
+            show_message_box(message)
+            return
+        else:
+            # Clear the existing table content
+            self.plot_table.clearContents()
 
-        # Set the table row count to the number of fetched results
-        self.plot_table.setRowCount(len(results))
+            # Set the table row count to the number of fetched results
+            self.plot_table.setRowCount(len(results))
 
-        # Populate the table with the fetched results
-        for row_idx, row_data in enumerate(results):
-            for col_idx, col_data in enumerate(row_data):
-                item = QTableWidgetItem(str(col_data))
-                self.plot_table.setItem(row_idx, col_idx, item)
+            # Populate the table with the fetched results
+            for row_idx, row_data in enumerate(results):
+                for col_idx, col_data in enumerate(row_data):
+                    item = QTableWidgetItem(str(col_data))
+                    self.plot_table.setItem(row_idx, col_idx, item)
+
+                # Create a combobox widget for actions
+                actions_combo = QComboBox()
+                actions_combo.addItem("Select")
+                actions_combo.addItem("Edit")
+                actions_combo.addItem("Save")
+                actions_combo.addItem("Delete")
+                actions_combo.currentIndexChanged.connect(self.handle_action)
+
+                # Set the combobox as the cell widget for the action column
+                self.plot_table.setCellWidget(row_idx, len(row_data), actions_combo)
+
+    def handle_action(self):
+        action = self.sender().currentText()
+
+        if action == "Edit":
+            self.edit_plot()
+        elif action == "Save":
+            self.save_plot()
+        elif action == "Delete":
+            self.delete_plot()
+        else:
+            pass
+
+    def get_selected_row_data(self):
+        row_idx = self.plot_table.currentRow()
+        plot_id = self.plot_table.item(row_idx, 0).text()
+        yard = self.plot_table.item(row_idx, 1).text()
+        row = self.plot_table.item(row_idx, 2).text()
+        col = self.plot_table.item(row_idx, 3).text()
+        return plot_id, yard, row, col
+
+    def edit_plot(self):
+        plot_id, yard, row, col = self.get_selected_row_data()
+        # prints, to check the selected values > see console for values
+        print('EDIT')
+        print(plot_id)
+        print(yard)
+        print(row)
+        print(col)
+
+        # perform a query to make the the row editable
+
+    def save_plot(self):
+        plot_id, yard, row, col = self.get_selected_row_data()
+        # prints, to check the selected values > see console for values
+        print('SAVE')
+        print(plot_id)
+        print(yard)
+        print(row)
+        print(col)
+
+        # perform a query to save the edited row
+
+    def delete_plot(self):
+        # prints, to check the selected values > see console for values
+        plot_id, yard, row, col = self.get_selected_row_data()
+        print('DELETE')
+        print(plot_id)
+        print(yard)
+        print(row)
+        print(col)
+
+        show_error_message(f"Are you sure you want to delete PLOT ID '{plot_id}' ?")
+        # if okay button is clicked. perform query to delete
+        self.display_plot(self)
 
 
 class Reservation_management(QMainWindow):
@@ -415,6 +515,7 @@ class Reservation_management(QMainWindow):
     def goto_reservation_page(self):
         reservation_page = Reservation_page()
         show_page(reservation_page)
+
 
 class Reservation_page(QMainWindow):
     def __init__(self):
@@ -488,6 +589,8 @@ class Reservation_page(QMainWindow):
                 # Error message for failed execution
                 error_message = "Reservation Failed, Please try again."
                 show_error_message(error_message)
+
+
 class Booking_management(QMainWindow):
     def __init__(self):
         super(Booking_management, self).__init__()
@@ -499,6 +602,7 @@ class Booking_management(QMainWindow):
     def goto_booking_page(self):
         booking = Booking_page()
         show_page(booking)
+
 
 class Booking_page(QMainWindow):
     def __init__(self):
@@ -594,6 +698,7 @@ class Booking_page(QMainWindow):
                 # Error message for failed execution
                 error_message = "Booking Failed, Please try again."
                 show_error_message(error_message)
+
 
 class View_transaction(QMainWindow):
     def __init__(self):
