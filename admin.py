@@ -302,6 +302,7 @@ class AdminDash(QMainWindow):
         self.reser_man_btn.clicked.connect(self.goto_reservation_management)
         self.booking_man_btn.clicked.connect(self.goto_booking_management)
         self.logoutbtn.clicked.connect(self.goto_login_page)
+        self.transactionbtn.clicked.connect(self.goto_view_transaction)
 
     def goto_record_management(self):
         record_management = Record_management()
@@ -318,6 +319,10 @@ class AdminDash(QMainWindow):
     def goto_booking_management(self):
         booking = Booking_management()
         show_page(booking)
+
+    def goto_view_transaction(self):
+        view_transaction = View_transaction()
+        show_page(view_transaction)
 
     def goto_login_page(self):
         login = Login()
@@ -373,8 +378,31 @@ class Plot_management(QMainWindow):
     def __init__(self):
         super(Plot_management, self).__init__()
         loadUi("gui/plot_management.ui", self)
-        self.backbtn.clicked.connect(goto_admin_dash)
-        plot_name_filter = self.plot_name_filter
+        self.backbtn.clicked.connect(self.goto_admin_dash)
+        self.plot_name = self.plot_name_filter
+
+    def goto_admin_dash(self):
+        admin_dash = AdminDash()
+        show_page(admin_dash)
+
+    def display_plot(self):
+        query = f"SELECT PLOT_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, PLOT_STATUS, PLOT_DATE FROM PLOT WHERE PLOT_YARD LIKE '%{self.plot_name}%';"
+
+        # Execute the query and fetch the results
+        results = execute_query_fetch(query)
+
+        # Clear the existing table content
+        self.plot_table.clearContents()
+
+        # Set the table row count to the number of fetched results
+        self.plot_table.setRowCount(len(results))
+
+        # Populate the table with the fetched results
+        for row_idx, row_data in enumerate(results):
+            for col_idx, col_data in enumerate(row_data):
+                item = QTableWidgetItem(str(col_data))
+                self.plot_table.setItem(row_idx, col_idx, item)
+
 
 class Reservation_management(QMainWindow):
     def __init__(self):
@@ -566,6 +594,54 @@ class Booking_page(QMainWindow):
                 # Error message for failed execution
                 error_message = "Booking Failed, Please try again."
                 show_error_message(error_message)
+
+class View_transaction(QMainWindow):
+    def __init__(self):
+        super(View_transaction, self).__init__()
+        loadUi("gui/transaction.ui", self)
+        self.backbtn.clicked.connect(goto_admin_dash)
+        global user_id
+        user_id = get_current_user_id()
+        self.display_reservations()
+        self.display_bookings()
+
+    def display_reservations(self):
+        query = f"SELECT T.TRANS_ID , P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, T.TRANS_STATUS FROM TRANSACTION T INNER JOIN PLOT P USING (PLOT_ID) \
+                WHERE T.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Reserved' ORDER BY T.TRANS_ID,  P.PLOT_DATE DESC;"
+
+        # Execute the query and fetch the results
+        results = execute_query_fetch(query)
+
+        # Clear the existing table content
+        self.reservation_table.clearContents()
+
+        # Set the table row count to the number of fetched results
+        self.reservation_table.setRowCount(len(results))
+
+        # Populate the table with the fetched results
+        for row_idx, row_data in enumerate(results):
+            for col_idx, col_data in enumerate(row_data):
+                item = QTableWidgetItem(str(col_data))
+                self.reservation_table.setItem(row_idx, col_idx, item)
+
+    def display_bookings(self):
+        query = f"SELECT T.TRANS_ID , P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, RL.REL_FNAME, RL.REL_MNAME, RL.REL_LNAME, RL.rel_dob, RL.rel_date_death FROM PLOT P \
+                INNER JOIN TRANSACTION T USING (PLOT_ID) INNER JOIN RELATIVE RL USING (REL_ID) WHERE T.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Booked' ORDER BY T.TRANS_ID, P.PLOT_DATE DESC;"
+
+        # Execute the query and fetch the results
+        results = execute_query_fetch(query)
+
+        # Clear the existing table content
+        self.booking_table.clearContents()
+
+        # Set the table row count to the number of fetched results
+        self.booking_table.setRowCount(len(results))
+
+        # Populate the table with the fetched results
+        for row_idx, row_data in enumerate(results):
+            for col_idx, col_data in enumerate(row_data):
+                item = QTableWidgetItem(str(col_data))
+                self.booking_table.setItem(row_idx, col_idx, item)
 
 
 app = QApplication(sys.argv)
