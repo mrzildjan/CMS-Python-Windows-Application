@@ -79,6 +79,52 @@ def get_current_user_id():
         return user_id
     else:
         return None
+
+def retrieve_latest_ids():
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')  # change password
+    cursor = conn.cursor()
+
+    # Retrieve the latest plot_id and rel_id from their respective tables
+    cursor.execute("SELECT plot_id FROM PLOT ORDER BY plot_date DESC LIMIT 1;")
+    latest_plot_id = cursor.fetchone()[0]
+
+    cursor.execute("SELECT MAX(rel_id) FROM RELATIVE;")
+    latest_rel_id = cursor.fetchone()[0]
+
+    cursor.close()
+    conn.close()
+
+    return latest_plot_id, latest_rel_id
+
+def check_plot_existence(plot_yard, plot_row, plot_col):
+    plot_id = f"{plot_yard}{plot_row}{plot_col}"
+
+    # Query to check if the plot ID exists in the PLOT table
+    query = f"SELECT COUNT(*) FROM PLOT WHERE PLOT_ID = '{plot_id}'"
+
+    # Execute the query and fetch the result
+    result = execute_query_fetch(query)
+
+    # Check if the result count is greater than 0
+    if result and result[0][0] > 0:
+        return True  # Plot exists
+    else:
+        return False  # Plot does not exist
+
+def check_plot_status(plot_yard, plot_row, plot_col):
+    plot_id = f"{plot_yard}{plot_row}{plot_col}"
+    query = f"SELECT plot_status FROM PLOT WHERE PLOT_ID = '{plot_id}'"
+
+    # Execute the query and fetch the result
+    result = execute_query_fetch(query)
+
+    # Check if the result exists and has at least one row
+    if result and len(result) > 0:
+        plot_status = result[0][0]
+        return plot_status  # Return the plot status
+    else:
+        return None  # Plot does not exist
+
 def show_page(frame):
     widget.addWidget(frame)
     widget.setCurrentIndex(widget.currentIndex() + 1)
@@ -347,30 +393,73 @@ class Reservation_page(QMainWindow):
         super(Reservation_page, self).__init__()
         loadUi("gui/plot_reservation.ui", self)
         self.backbtn.clicked.connect(self.goto_reservation_management)
-        self.reservebtn.clicked.connect(self.reservenow)
-        self.checkbtn.clicked.connect(self.check_plot_status)
-        txtfname = self.txtfname
-        txtlname = self.txtlname
-        mobile = self.mobile
-        address = self.txtaddress
-        plot_name = self.plot_name
-        plot_row = self.plot_row
-        plot_column = self.plot_column
-        plot_status = self.plot_status
-        plot_price = self.plot_price
-
+        self.checkbtn.clicked.connect(self.display_plot_status)
+        self.reservebtn.clicked.connect(self.reserve_now)
 
     def goto_reservation_management(self):
         reservation_management = Reservation_management()
         show_page(reservation_management)
 
-    def check_plot_status(self):
-        # code to check plot status
-        pass
+    def display_plot_status(self):
+        plot_yard = self.plot_yard.currentText()
+        plot_row = self.plot_row.currentText()
+        plot_col = self.plot_col.currentText()
 
-    def reservenow(self):
-        # code to add the reservation
-        pass
+        plot_status = check_plot_status(plot_yard, plot_row, plot_col)
+        if plot_status is not None:
+            self.plot_status.setText(plot_status)
+        else:
+            self.plot_status.setText("Available")
+
+    def reserve_now(self):
+        # Get the values from the UI
+        plot_yard = self.plot_yard.currentText()
+        plot_row = self.plot_row.currentText()
+        plot_col = self.plot_col.currentText()
+        plot_status = self.plot_status.text()
+        user_id = get_current_user_id()
+
+        if plot_status == "":
+            error_message = "Please Choose Plot Location"
+            show_error_message(error_message)
+            return
+
+        if any(value == "" for value in
+               [plot_yard, plot_row, plot_col, plot_status]):
+            # Display error message for null values
+            error_message = "Please fill in all fields."
+            show_error_message(error_message)
+            return
+
+        # Check if the plot already exists
+        if check_plot_existence(plot_yard, plot_row, plot_col):
+            error_message = "Chosen Plot is Unavailable, Please select a different plot."
+            show_error_message(error_message)
+        else:
+            current_date_time = datetime.now()
+            plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
+                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Reserved', '{current_date_time}' )"
+            # Execute the queries
+            plot_result = execute_query(plot_query)
+
+            latest_plot_id, latest_rel_id = retrieve_latest_ids()
+            transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
+                                f"VALUES ( 'Reserved'  , 'Pending' , '{current_date}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
+
+            # Execute the queries
+            transaction_result = execute_query(transaction_query)
+
+            # Check if the queries were successful
+            if plot_result and transaction_result:
+                # Booking successful
+                success_message = "Reservation Successful!"
+                show_success_message(success_message)
+
+                self.goto_booking_services()
+            else:
+                # Error message for failed execution
+                error_message = "Reservation Failed, Please try again."
+                show_error_message(error_message)
 class Booking_management(QMainWindow):
     def __init__(self):
         super(Booking_management, self).__init__()
@@ -389,29 +478,94 @@ class Booking_page(QMainWindow):
         loadUi("gui/book_interment.ui", self)
         self.backbtn.clicked.connect(self.goto_booking_management)
         self.booknowbtn.clicked.connect(self.book_now)
-        cus_fname = self.cus_fname
-        cus_lname = self.cus_lname
-        mobile = self.mobile
-        address = self.txtaddress
-        dec_fname = self.dec_fname
-        dec_mname = self.dec_mname
-        dec_lname = self.dec_lname
-        dec_dob = self.dec_dob
-        dec_dod = self.dec_dod
-        dec_doi = self.dec_doi
-
+        self.checkbtn.clicked.connect(self.display_plot_status)
 
     def goto_booking_management(self):
         booking = Booking_management()
         show_page(booking)
 
-    def check_plot_status(self):
-        # code to check plot status for booking interment
-        pass
+    def display_plot_status(self):
+        plot_yard = self.plot_name.currentText()
+        plot_row = self.plot_row.currentText()
+        plot_col = self.plot_col.currentText()
+
+        plot_status = check_plot_status(plot_yard, plot_row, plot_col)
+        if plot_status is not None:
+            self.plot_status.setText(plot_status)
+        else:
+            self.plot_status.setText("Available")
 
     def book_now(self):
-        # code to add the booking
-        pass
+        # Get the values from the UI
+        dec_fname = self.dec_fname.text()
+        dec_mname = self.dec_mname.text()
+        dec_lname = self.dec_lname.text()
+        dec_dob = self.dec_dob.date().toString("yyyy-MM-dd")
+        dec_dod = self.dec_dod.date().toString("yyyy-MM-dd")
+        dec_doi = self.dec_doi.date().toString("yyyy-MM-dd")
+        user_id = get_current_user_id()
+        plot_yard = self.plot_name.currentText()
+        plot_row = self.plot_row.currentText()
+        plot_col = self.plot_col.currentText()
+        plot_status = self.plot_status.text()
+
+        if plot_status == "":
+            error_message = "Please Choose Plot Location"
+            show_error_message(error_message)
+            return
+
+        if any(value == "" for value in
+               [dec_fname, dec_lname, dec_dob, dec_dod, dec_doi, plot_yard, plot_row, plot_col, plot_status]):
+            # Display error message for null values
+            error_message = "Please fill in all fields."
+            show_error_message(error_message)
+            return
+
+        if not (dec_fname.replace(" ", "").isalpha() and dec_lname.isalpha() and (
+                dec_mname == "" or dec_mname.isalpha())):
+            # Display error message for non-letter values
+            error_message = "Name fields should only contain letters."
+            show_error_message(error_message)
+            return
+
+        # Check if the plot already exists
+        if check_plot_existence(plot_yard, plot_row, plot_col):
+            error_message = "Chosen Plot is Unavailable, Please select a different plot."
+            show_error_message(error_message)
+        else:
+            current_date_time = datetime.now()
+            relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                              VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+            plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
+                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Booked', '{current_date_time}' )"
+
+            # Execute the queries
+            relative_result = execute_query(relative_query)
+            plot_result = execute_query(plot_query)
+
+            latest_plot_id, latest_rel_id = retrieve_latest_ids()
+            print("rel  ", latest_rel_id)
+            print("plot  ", latest_plot_id)
+            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
+                           f"VALUES ('{current_date}', 500.00, 'Booked', '{latest_plot_id}', '{latest_rel_id}', '{user_id}');"
+
+            transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
+                                f"VALUES ( 'Booked'  , 'Fully Paid' , '{current_date}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
+
+            record_result = execute_query(record_query)
+            transaction_result = execute_query(transaction_query)
+
+            # Check if the queries were successful
+            if relative_result and plot_result and record_result and transaction_result:
+                # Booking successful
+                success_message = "Booking Successful!"
+                show_success_message(success_message)
+
+                self.goto_booking_services()
+            else:
+                # Error message for failed execution
+                error_message = "Booking Failed, Please try again."
+                show_error_message(error_message)
 
 
 app = QApplication(sys.argv)
