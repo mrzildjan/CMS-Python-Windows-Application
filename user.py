@@ -41,7 +41,7 @@ def execute_query_fetch(query):
         conn.close()
 
 def execute_query(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -641,7 +641,7 @@ class Plot_reservation(QMainWindow):
         show_page(booking_services)
 
     def display_plot_status(self):
-        plot_yard = self.plot_name.currentText()
+        plot_yard = self.plot_yard.currentText()
         plot_row = self.plot_row.currentText()
         plot_col = self.plot_col.currentText()
 
