@@ -307,10 +307,10 @@ color: white;
       <widget class="QTableWidget" name="plotlocatortable">
        <property name="geometry">
         <rect>
-         <x>40</x>
+         <x>20</x>
          <y>230</y>
-         <width>1211</width>
-         <height>251</height>
+         <width>1291</width>
+         <height>291</height>
         </rect>
        </property>
        <property name="font">
@@ -429,8 +429,8 @@ height: 5rem</string>
       <widget class="QComboBox" name="search">
        <property name="geometry">
         <rect>
-         <x>440</x>
-         <y>40</y>
+         <x>380</x>
+         <y>30</y>
          <width>201</width>
          <height>51</height>
         </rect>

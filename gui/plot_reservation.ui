@@ -120,8 +120,8 @@ background-color: rgb(113, 113, 113)
         <rect>
          <x>120</x>
          <y>10</y>
-         <width>361</width>
-         <height>61</height>
+         <width>651</width>
+         <height>71</height>
         </rect>
        </property>
        <property name="styleSheet">
@@ -144,7 +144,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>270</y>
+         <y>380</y>
          <width>211</width>
          <height>61</height>
         </rect>
@@ -166,7 +166,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>330</y>
+         <y>440</y>
          <width>201</width>
          <height>40</height>
         </rect>
@@ -220,7 +220,7 @@ border-radius:0px;
        <property name="geometry">
         <rect>
          <x>280</x>
-         <y>330</y>
+         <y>440</y>
          <width>51</width>
          <height>40</height>
         </rect>
@@ -274,7 +274,7 @@ border-radius:0px;
        <property name="geometry">
         <rect>
          <x>370</x>
-         <y>330</y>
+         <y>440</y>
          <width>51</width>
          <height>40</height>
         </rect>
@@ -356,7 +356,7 @@ border-radius:0px;
        <property name="geometry">
         <rect>
          <x>630</x>
-         <y>330</y>
+         <y>440</y>
          <width>261</width>
          <height>40</height>
         </rect>
@@ -454,7 +454,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>450</x>
-         <y>330</y>
+         <y>440</y>
          <width>151</width>
          <height>40</height>
         </rect>
@@ -509,6 +509,316 @@ background-color:rgb(0, 126, 0)
        </property>
        <property name="scaledContents">
         <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QTextEdit" name="Cemasys_4">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>170</y>
+         <width>451</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:WHITE;
+border: none;
+background-color: transparent;</string>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#7a7a7a;&quot;&gt;Decease's Information&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>290</y>
+         <width>191</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+font: 11pt &quot;MS Shell Dlg 2&quot;;
+
+color:rgb(143, 143, 143)</string>
+       </property>
+       <property name="text">
+        <string>Date of Birth</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="dec_mname">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>230</y>
+         <width>260</width>
+         <height>40</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#dec_mname {
+	font: 14pt &quot;MS Shell Dlg 2&quot;;
+  background-color:white;
+  border-radius: 20px;
+  transition: box-shadow 0.3s;
+}
+
+#dec_mname:hover {
+  border: 2px solid rgb(122, 122, 122);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  outline: none;
+}
+
+#dec_mname:hover:focus {
+  box-shadow: 0 0 8px rgb(165, 255, 240); /* Adding a glow effect */
+}
+</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>Middle Name</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>640</x>
+         <y>290</y>
+         <width>241</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+font: 11pt &quot;MS Shell Dlg 2&quot;;
+
+color:rgb(143, 143, 143)</string>
+       </property>
+       <property name="text">
+        <string>Date of Interment</string>
+       </property>
+      </widget>
+      <widget class="QDateEdit" name="dec_dod">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>320</y>
+         <width>260</width>
+         <height>40</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 16pt &quot;MS Shell Dlg 2&quot;;
+background-color:white;
+border-radius:20px;
+color: rgb(122, 122, 122)</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
+      <widget class="QDateEdit" name="dec_doi">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>320</y>
+         <width>260</width>
+         <height>40</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 16pt &quot;MS Shell Dlg 2&quot;;
+background-color:white;
+border-radius:20px;
+color: rgb(122, 122, 122)</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="dec_lname">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>230</y>
+         <width>260</width>
+         <height>40</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#dec_lname {
+	font: 14pt &quot;MS Shell Dlg 2&quot;;
+  background-color:white;
+  border-radius: 20px;
+  transition: box-shadow 0.3s;
+}
+
+#dec_lname:hover {
+  border: 2px solid rgb(122, 122, 122);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  outline: none;
+}
+
+#dec_lname:hover:focus {
+  box-shadow: 0 0 8px rgb(165, 255, 240); /* Adding a glow effect */
+}
+</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>Last Name</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="dec_fname">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>230</y>
+         <width>260</width>
+         <height>40</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#dec_fname {
+	font: 14pt &quot;MS Shell Dlg 2&quot;;
+  background-color:white;
+  border-radius: 20px;
+  transition: box-shadow 0.3s;
+}
+
+#dec_fname:hover {
+  border: 2px solid rgb(122, 122, 122);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  outline: none;
+}
+
+#dec_fname:hover:focus {
+  box-shadow: 0 0 8px rgb(165, 255, 240); /* Adding a glow effect */
+}
+</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="placeholderText">
+        <string>First Name</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>380</x>
+         <y>290</y>
+         <width>191</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+font: 11pt &quot;MS Shell Dlg 2&quot;;
+
+color:rgb(143, 143, 143)</string>
+       </property>
+       <property name="text">
+        <string>Date of Death</string>
+       </property>
+      </widget>
+      <widget class="QDateEdit" name="dec_dob">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>320</y>
+         <width>260</width>
+         <height>40</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 16pt &quot;MS Shell Dlg 2&quot;;
+background-color:white;
+border-radius:20px;
+color: rgb(122, 122, 122)</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
+      <widget class="QTextEdit" name="note">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>100</y>
+         <width>1081</width>
+         <height>91</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: red;
+border: none;
+background-color: transparent;</string>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; color:#ba3939;&quot;&gt;Plot Reservation is Valid for 1 Week Only.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; color:#ba3939;&quot;&gt;Failure to book the reservation within the allotted period will render it ineffective.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; color:#ba3939;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </widget>

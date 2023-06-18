@@ -187,9 +187,9 @@ p, li { white-space: pre-wrap; }
       <widget class="QLineEdit" name="txtfname">
        <property name="geometry">
         <rect>
-         <x>140</x>
+         <x>160</x>
          <y>110</y>
-         <width>310</width>
+         <width>300</width>
          <height>40</height>
         </rect>
        </property>
@@ -227,9 +227,9 @@ p, li { white-space: pre-wrap; }
       <widget class="QLineEdit" name="txtlname">
        <property name="geometry">
         <rect>
-         <x>460</x>
+         <x>480</x>
          <y>110</y>
-         <width>310</width>
+         <width>300</width>
          <height>40</height>
         </rect>
        </property>
@@ -287,34 +287,6 @@ border: none</string>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#7a7a7a;&quot;&gt;__________________________________________________________&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="searchbtn">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>110</y>
-         <width>110</width>
-         <height>40</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">#searchbtn {
-color:rgb(0, 154, 0);
-background-color:rgb(255, 255, 255);
-font: 75 15pt &quot;Arial&quot;;
-border-radius:15px;
-border: 3px solid rgb(0, 156, 0);
-}
-
-#searchbtn:hover {
-
-background-color: rgb(0, 170, 0);
-color: white;
-}</string>
-       </property>
-       <property name="text">
-        <string>Search</string>
        </property>
       </widget>
       <widget class="QLabel" name="background_3">
@@ -494,7 +466,7 @@ height: 5rem</string>
       <widget class="QComboBox" name="search">
        <property name="geometry">
         <rect>
-         <x>520</x>
+         <x>430</x>
          <y>20</y>
          <width>201</width>
          <height>51</height>
@@ -518,11 +490,15 @@ font: 14pt &quot;MS Shell Dlg 2&quot;;</string>
       <widget class="QFrame" name="by_date">
        <property name="geometry">
         <rect>
-         <x>780</x>
+         <x>790</x>
          <y>40</y>
          <width>501</width>
          <height>131</height>
         </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:transparent;
+</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -609,6 +585,45 @@ color: rgb(122, 122, 122)</string>
          <enum>QAbstractSpinBox::NoButtons</enum>
         </property>
        </widget>
+      </widget>
+      <widget class="QComboBox" name="searchbtn">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>110</y>
+         <width>131</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#searchbtn {
+color:black;
+background-color:rgb(255, 255, 255);
+font: 75 15pt &quot;Arial&quot;;
+border-radius:15px;
+border: 3px solid rgb(0, 156, 0);
+}
+
+#searchbtn:hover {
+
+background-color: rgb(0, 170, 0);
+}</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>Search</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Buried</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Exhumed</string>
+        </property>
+       </item>
       </widget>
      </widget>
     </widget>

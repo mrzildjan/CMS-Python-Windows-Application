@@ -2,7 +2,7 @@ import datetime
 import sys
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QPushButton
 from PyQt5.QtGui import QIcon
 import psycopg2
 import re
@@ -15,7 +15,7 @@ logged_in_username = None
 logged_in_password = None
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
     cursor = conn.cursor()
 
     try:
@@ -40,8 +40,9 @@ def execute_query_fetch(query):
         cursor.close()
         conn.close()
 
+
 def execute_query(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
     cursor = conn.cursor()
 
     try:
@@ -81,7 +82,7 @@ def get_current_user_id():
         return None
 
 def retrieve_latest_ids():
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')  # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')  # change password
     cursor = conn.cursor()
 
     # Retrieve the latest plot_id and rel_id from their respective tables
@@ -152,6 +153,12 @@ def show_success_message(message):
     message_box = message_box
     message_box.exec_()
 
+def show_message_box(message):
+    msg_box = QMessageBox()
+    msg_box.setIcon(QMessageBox.Information)
+    msg_box.setText(message)
+    msg_box.setWindowTitle("Information")
+    msg_box.exec_()
 class Login(QMainWindow):
     def __init__(self):
         super(Login, self).__init__()
@@ -377,17 +384,23 @@ class Plot_locator(QMainWindow):
             # Execute the query and fetch the results
             results = execute_query_fetch(query)
 
-            # Clear the existing table content
-            self.plotlocatortable.clearContents()
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
 
-            # Set the table row count to the number of fetched results
-            self.plotlocatortable.setRowCount(len(results))
+                # Clear the existing table content
+                self.plotlocatortable.clearContents()
 
-            # Populate the table with the fetched results
-            for row_idx, row_data in enumerate(results):
-                for col_idx, col_data in enumerate(row_data):
-                    item = QTableWidgetItem(str(col_data))
-                    self.plotlocatortable.setItem(row_idx, col_idx, item)
+                # Set the table row count to the number of fetched results
+                self.plotlocatortable.setRowCount(len(results))
+
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
+                        item = QTableWidgetItem(str(col_data))
+                        self.plotlocatortable.setItem(row_idx, col_idx, item)
 
         else:
 
@@ -415,17 +428,22 @@ class Plot_locator(QMainWindow):
             # Execute the query and fetch the results
             results = execute_query_fetch(query)
 
-            # Clear the existing table content
-            self.plotlocatortable.clearContents()
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
+                # Clear the existing table content
+                self.plotlocatortable.clearContents()
 
-            # Set the table row count to the number of fetched results
-            self.plotlocatortable.setRowCount(len(results))
+                # Set the table row count to the number of fetched results
+                self.plotlocatortable.setRowCount(len(results))
 
-            # Populate the table with the fetched results
-            for row_idx, row_data in enumerate(results):
-                for col_idx, col_data in enumerate(row_data):
-                    item = QTableWidgetItem(str(col_data))
-                    self.plotlocatortable.setItem(row_idx, col_idx, item)
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
+                        item = QTableWidgetItem(str(col_data))
+                        self.plotlocatortable.setItem(row_idx, col_idx, item)
 
 
 class Search_record(QMainWindow):
@@ -437,7 +455,8 @@ class Search_record(QMainWindow):
         self.dob.setDisplayFormat("yyyy-MM-dd")
         self.dod.setDisplayFormat("yyyy-MM-dd")
         self.search.currentTextChanged.connect(self.search_changed)
-        self.searchbtn.clicked.connect(self.perform_search)
+        self.searchbtn.currentTextChanged.connect(self.search_view)
+
 
     def search_changed(self, text):
         if text == "Search by Name":
@@ -445,7 +464,15 @@ class Search_record(QMainWindow):
         else:
             self.by_date.setVisible(True)
 
-    def perform_search(self):
+    def search_view(self, text):
+        if text == "Buried":
+            self.perform_search_buried()
+        elif text == "Exhumed":
+            self.perform_search_exhumed()
+        else:
+            pass
+
+    def perform_search_buried(self):
         txtfname = self.txtfname.text()
         txtlname = self.txtlname.text()
         dob = self.dob.text()
@@ -469,17 +496,23 @@ class Search_record(QMainWindow):
             # Execute the query and fetch the results
             results = execute_query_fetch(query)
 
-            # Clear the existing table content
-            self.record_table.clearContents()
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
 
-            # Set the table row count to the number of fetched results
-            self.record_table.setRowCount(len(results))
+                # Clear the existing table content
+                self.record_table.clearContents()
 
-            # Populate the table with the fetched results
-            for row_idx, row_data in enumerate(results):
-                for col_idx, col_data in enumerate(row_data):
-                    item = QTableWidgetItem(str(col_data))
-                    self.record_table.setItem(row_idx, col_idx, item)
+                # Set the table row count to the number of fetched results
+                self.record_table.setRowCount(len(results))
+
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
+                        item = QTableWidgetItem(str(col_data))
+                        self.record_table.setItem(row_idx, col_idx, item)
 
         else:
             # Construct the query
@@ -507,17 +540,104 @@ class Search_record(QMainWindow):
             # Execute the query and fetch the results
             results = execute_query_fetch(query)
 
-            # Clear the existing table content
-            self.record_table.clearContents()
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
+                # Clear the existing table content
+                self.record_table.clearContents()
 
-            # Set the table row count to the number of fetched results
-            self.record_table.setRowCount(len(results))
+                # Set the table row count to the number of fetched results
+                self.record_table.setRowCount(len(results))
 
-            # Populate the table with the fetched results
-            for row_idx, row_data in enumerate(results):
-                for col_idx, col_data in enumerate(row_data):
-                    item = QTableWidgetItem(str(col_data))
-                    self.record_table.setItem(row_idx, col_idx, item)
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
+                        item = QTableWidgetItem(str(col_data))
+                        self.record_table.setItem(row_idx, col_idx, item)
+
+    def perform_search_exhumed(self):
+        txtfname = self.txtfname.text()
+        txtlname = self.txtlname.text()
+        dob = self.dob.text()
+        dod = self.dod.text()
+        search_text = self.search.currentText()
+
+        if search_text == "Search by Name":
+            # Construct the query
+            query = "SELECT REC.PLOT_ID, REC.PLOT_ID, REC.PLOT_ID, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION \
+                                   FROM RECORD REC INNER JOIN RELATIVE R USING(REL_ID) WHERE REC.REC_STATUS = 'Exhumed' "
+
+            if txtlname and txtfname:
+                query += f" AND R.REL_FNAME = '{txtfname}' AND R.REL_LNAME = '{txtlname}' "
+            if txtfname:
+                query += f" AND R.REL_FNAME = '{txtfname}'"
+            if txtlname:
+                query += f" AND R.REL_LNAME = '{txtlname}'"
+
+            query += ";"
+
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
+
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
+
+                # Clear the existing table content
+                self.record_table.clearContents()
+
+                # Set the table row count to the number of fetched results
+                self.record_table.setRowCount(len(results))
+
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
+                        item = QTableWidgetItem(str(col_data))
+                        self.record_table.setItem(row_idx, col_idx, item)
+
+        else:
+            # Construct the query
+            query =  "SELECT REC.PLOT_ID, REC.PLOT_ID, REC.PLOT_ID, R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION \
+                                   FROM RECORD REC INNER JOIN RELATIVE R USING(REL_ID) WHERE REC.REC_STATUS = 'Exhumed' "
+
+
+            if txtlname and txtfname:
+                query += f" AND R.REL_FNAME = '{txtfname}' AND R.REL_LNAME = '{txtlname}' "
+            if txtfname:
+                query += f" AND R.REL_FNAME = '{txtfname}'"
+            if txtlname:
+                query += f" AND R.REL_LNAME = '{txtlname}'"
+            if dob:
+                query += f" AND R.REL_DOB = '{dob}'"
+            if dod:
+                query += f" AND R.REL_DATE_DEATH = '{dod}'"
+
+            query += ";"
+
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
+
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
+
+                # Clear the existing table content
+                self.record_table.clearContents()
+
+                # Set the table row count to the number of fetched results
+                self.record_table.setRowCount(len(results))
+
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
+                        item = QTableWidgetItem(str(col_data))
+                        self.record_table.setItem(row_idx, col_idx, item)
 
 
 class Booking_services(QMainWindow):
@@ -600,17 +720,15 @@ class Book_interment(QMainWindow):
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                               VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Booked', '{current_date_time}' )"
+                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
 
             # Execute the queries
             relative_result = execute_query(relative_query)
             plot_result = execute_query(plot_query)
 
             latest_plot_id, latest_rel_id = retrieve_latest_ids()
-            print("rel  ", latest_rel_id)
-            print("plot  ",latest_plot_id)
             record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
-                           f"VALUES ('{current_date}', 500.00, 'Booked', '{latest_plot_id}', '{latest_rel_id}', '{user_id}');"
+                           f"VALUES ('{current_date}', 500.00, 'Buried', '{latest_plot_id}', '{latest_rel_id}', '{user_id}');"
 
             transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
                                 f"VALUES ( 'Booked'  , 'Fully Paid' , '{current_date}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
@@ -656,7 +774,12 @@ class Plot_reservation(QMainWindow):
             self.plot_status.setText("Available")
 
     def reserve_now(self):
-        # Get the values from the UI
+        dec_fname = self.dec_fname.text()
+        dec_mname = self.dec_mname.text()
+        dec_lname = self.dec_lname.text()
+        dec_dob = self.dec_dob.date().toString("yyyy-MM-dd")
+        dec_dod = self.dec_dod.date().toString("yyyy-MM-dd")
+        dec_doi = self.dec_doi.date().toString("yyyy-MM-dd")
         plot_yard = self.plot_yard.currentText()
         plot_row = self.plot_row.currentText()
         plot_col = self.plot_col.currentText()
@@ -675,15 +798,25 @@ class Plot_reservation(QMainWindow):
             show_error_message(error_message)
             return
 
+        if not (dec_fname.replace(" ", "").isalpha() and dec_lname.isalpha() and (
+                dec_mname == "" or dec_mname.isalpha())):
+            # Display error message for non-letter values
+            error_message = "Name fields should only contain letters."
+            show_error_message(error_message)
+            return
+
         # Check if the plot already exists
         if check_plot_existence(plot_yard, plot_row, plot_col):
             error_message = "Chosen Plot is Unavailable, Please select a different plot."
             show_error_message(error_message)
         else:
             current_date_time = datetime.now()
+            relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                          VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Reserved', '{current_date_time}' )"
+                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
             # Execute the queries
+            relative_result = execute_query(relative_query)
             plot_result = execute_query(plot_query)
 
             latest_plot_id, latest_rel_id = retrieve_latest_ids()
@@ -694,7 +827,7 @@ class Plot_reservation(QMainWindow):
             transaction_result = execute_query(transaction_query)
 
             # Check if the queries were successful
-            if plot_result and transaction_result:
+            if plot_result and transaction_result and relative_result:
                 # Booking successful
                 success_message = "Reservation Successful!"
                 show_success_message(success_message)
@@ -723,8 +856,8 @@ class Transaction_page(QMainWindow):
         self.display_bookings()
 
     def display_reservations(self):
-        query = f"SELECT T.TRANS_ID , P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, T.TRANS_STATUS FROM TRANSACTION T INNER JOIN PLOT P USING (PLOT_ID) \
-                WHERE T.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Reserved' ORDER BY T.TRANS_ID,  P.PLOT_DATE DESC;"
+        query = f"SELECT T.TRANS_ID , P.PLOT_ID, R.REL_ID, R.REL_FNAME, R.REL_LNAME,  T.TRANS_STATUS FROM PLOT P INNER JOIN TRANSACTION T USING (PLOT_ID) \
+                INNER JOIN RELATIVE R USING(REL_ID) WHERE T.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Reserved' ORDER BY T.TRANS_ID,  P.PLOT_DATE DESC;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
@@ -740,6 +873,48 @@ class Transaction_page(QMainWindow):
             for col_idx, col_data in enumerate(row_data):
                 item = QTableWidgetItem(str(col_data))
                 self.reservation_table.setItem(row_idx, col_idx, item)
+
+            # Create and set the button in the last column of each row
+            button = QPushButton("Book")
+            button.setProperty("plot_id", str(row_data[1]))  # Set the PLOT_ID as a custom property
+            button.setProperty("rel_id", str(row_data[2]))  # Set the REL_ID as a custom property
+            button.setStyleSheet("background-color: green; color: white;")
+
+            button.clicked.connect(self.book_reservation)
+            self.reservation_table.setCellWidget(row_idx, len(row_data), button)
+
+    def book_reservation(self):
+        # Get the sender button from the signal
+        button = self.sender()
+
+        # Get the row index of the clicked button
+        row_idx = self.reservation_table.indexAt(button.pos()).row()
+
+        # Retrieve the PLOT_ID and REL_ID from the custom properties of the button
+        plot_id = button.property("plot_id")
+        rel_id = button.property("rel_id")
+
+        record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
+                       f"VALUES ('{current_date}', 500.00, 'Buried', '{plot_id}', '{rel_id}', '{user_id}');"
+
+        trans_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked' WHERE PLOT_ID = '{plot_id}' AND REL_ID = '{rel_id}';"
+
+        record_result = execute_query(record_query)
+        trans_result = execute_query(trans_query)
+
+        if record_result and trans_result:
+            # Booking successful
+            success_message = "Booking Successful!"
+            show_success_message(success_message)
+
+            self.display_reservations()
+            self.display_bookings()
+        else:
+            # Error message for failed execution
+            error_message = "Booking Failed, Please try again."
+            show_error_message(error_message)
+
+
 
     def display_bookings(self):
         query = f"SELECT T.TRANS_ID , P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, RL.REL_FNAME, RL.REL_MNAME, RL.REL_LNAME, RL.rel_dob, RL.rel_date_death FROM PLOT P \

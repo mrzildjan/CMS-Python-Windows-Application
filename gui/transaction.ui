@@ -57,7 +57,7 @@ p, li { white-space: pre-wrap; }
        <x>50</x>
        <y>120</y>
        <width>1261</width>
-       <height>601</height>
+       <height>621</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -394,7 +394,7 @@ height: 5rem</string>
        <rect>
         <x>30</x>
         <y>80</y>
-        <width>1011</width>
+        <width>1211</width>
         <height>161</height>
        </rect>
       </property>
@@ -419,7 +419,7 @@ height: 5rem</string>
        <number>0</number>
       </property>
       <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>200</number>
+       <number>160</number>
       </attribute>
       <attribute name="verticalHeaderDefaultSectionSize">
        <number>60</number>
@@ -436,7 +436,7 @@ height: 5rem</string>
       </column>
       <column>
        <property name="text">
-        <string>Plot Name</string>
+        <string>Plot ID</string>
        </property>
        <property name="font">
         <font>
@@ -446,7 +446,7 @@ height: 5rem</string>
       </column>
       <column>
        <property name="text">
-        <string>Plot Row</string>
+        <string>Rel ID</string>
        </property>
        <property name="font">
         <font>
@@ -456,7 +456,17 @@ height: 5rem</string>
       </column>
       <column>
        <property name="text">
-        <string>Plot Column</string>
+        <string>First Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Last Name</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Status</string>
        </property>
        <property name="font">
         <font>
@@ -466,12 +476,7 @@ height: 5rem</string>
       </column>
       <column>
        <property name="text">
-        <string>Payment</string>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
+        <string>Action</string>
        </property>
       </column>
      </widget>

@@ -407,7 +407,7 @@ p, li { white-space: pre-wrap; }
        <set>Qt::AlignCenter</set>
       </property>
       <property name="placeholderText">
-       <string>Address</string>
+       <string>Email Address</string>
       </property>
      </widget>
      <widget class="QTextEdit" name="lblpass_4">
