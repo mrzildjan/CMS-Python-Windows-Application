@@ -1,4 +1,3 @@
-# delete this later
 import datetime
 import sys
 
@@ -12,7 +11,7 @@ import psycopg2
 import re
 from datetime import date, datetime
 
-current_date = date.today()
+current_date_time = datetime.now()
 
 # Define the global variable
 logged_in_username = None
@@ -293,7 +292,7 @@ class Register(QMainWindow):
                 insert_query = f"INSERT INTO USERS (USER_FNAME, USER_MNAME, USER_LNAME, USER_NUMBER, USER_EMAIL, " \
                                f"USER_USERNAME, USER_PASSWORD, USER_IS_ADMIN, USER_CREATED_AT, USER_UPDATED_AT) " \
                                f"VALUES ('{first_name}', '{mid_name}', '{last_name}', '{number}', '{address}', " \
-                               f"'{username}', '{password}', 't', '{current_date}', '{current_date}')"
+                               f"'{username}', '{password}', 't', '{current_date_time}', '{current_date_time}')"
 
                 # Execute the query and check if it was successful
                 if execute_query(insert_query):
@@ -564,7 +563,6 @@ class Reservation_page(QMainWindow):
             error_message = "Chosen Plot is Unavailable, Please select a different plot."
             show_error_message(error_message)
         else:
-            current_date_time = datetime.now()
             plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
                           VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Reserved', '{current_date_time}' )"
 
@@ -574,12 +572,12 @@ class Reservation_page(QMainWindow):
             if plot_result:
                 latest_plot_id, latest_rel_id = retrieve_latest_ids()
 
-                transaction_query = f"INSERT INTO TRANSACTION (trans_type, trans_status, trans_date, user_id, plot_id)"
+                transaction_query = f"INSERT INTO TRANSACTION (trans_type, trans_status, trans_date, user_id, rel_id, plot_id)"
 
                 if latest_rel_id is not None:
-                    transaction_query += f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', '{latest_plot_id}')"
+                    transaction_query += f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', '{latest_rel_id}','{latest_plot_id}')"
                 else:
-                    transaction_query += f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', NULL)"
+                    transaction_query += f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', NULL, '{latest_plot_id}')"
 
                 # Execute the transaction query
                 transaction_result = execute_query(transaction_query)
@@ -675,7 +673,6 @@ class Booking_page(QMainWindow):
             error_message = "Chosen Plot is Unavailable, Please select a different plot."
             show_error_message(error_message)
         else:
-            current_date_time = datetime.now()
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                               VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
@@ -689,10 +686,10 @@ class Booking_page(QMainWindow):
             print("rel  ", latest_rel_id)
             print("plot  ", latest_plot_id)
             record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
-                           f"VALUES ('{current_date}', 500.00, 'Booked', '{latest_plot_id}', '{latest_rel_id}', '{user_id}');"
+                           f"VALUES ('{current_date_time}', 500.00, 'Booked', '{latest_plot_id}', '{latest_rel_id}', '{user_id}');"
 
             transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
-                                f"VALUES ( 'Booked'  , 'Fully Paid' , '{current_date}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
+                                f"VALUES ( 'Booked'  , 'Fully Paid' , '{current_date_time}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
 
             record_result = execute_query(record_query)
             transaction_result = execute_query(transaction_query)
