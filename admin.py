@@ -216,6 +216,8 @@ class Login(QMainWindow):
 
                 # Successful login, redirect to dashboard
                 self.goto_dashboard()
+                # Call the function
+                call_delete_pending_records()
 
             else:
                 # If no matching row found, then either the user credentials are invalid or the account is not admin
@@ -1125,10 +1127,9 @@ class Booking_management(QMainWindow):
         show_page(admin_dash)
 
     def display_booking(self, plot_yard):
-        query = f"SELECT TRANS_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, REL_FNAME, REL_DOB, REL_DATE_DEATH, REL_DATE_INTERMENT, TRANS_TYPE FROM USERS " \
-                f"INNER JOIN TRANSACTION USING(USER_ID)" \
-                f"INNER JOIN PLOT USING(PLOT_ID) " \
-                f"INNER JOIN RELATIVE USING(USER_ID) WHERE PLOT_YARD = '{plot_yard}' AND TRANS_TYPE = 'Booked' ORDER BY TRANS_ID DESC;"
+        query = f"SELECT T.TRANS_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, T.TRANS_TYPE FROM TRANSACTION T INNER JOIN PLOT P ON T.PLOT_ID = P.PLOT_ID \
+                    INNER JOIN RELATIVE R ON T.REL_ID = R.REL_ID WHERE P.PLOT_YARD = '{plot_yard}' AND T.TRANS_TYPE = 'Booked' ORDER BY T.TRANS_ID DESC;"
+
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
@@ -1418,6 +1419,32 @@ class View_transaction(QMainWindow):
             for col_idx, col_data in enumerate(row_data):
                 item = QTableWidgetItem(str(col_data))
                 self.booking_table.setItem(row_idx, col_idx, item)
+
+def call_delete_pending_records():
+    try:
+        conn = psycopg2.connect(
+            host="localhost",
+            database="cms",
+            user="postgres",
+            password="password"
+        )
+
+        # Create a cursor to interact with the database
+        cursor = conn.cursor()
+
+        # Call the delete_pending_records() function
+        cursor.callproc("delete_pending_records")
+
+        # Commit the changes to the database
+        conn.commit()
+
+        # Close the cursor and the database connection
+        cursor.close()
+        conn.close()
+
+        print("delete_pending_records function executed successfully.")
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("Error calling delete_pending_records function:", error)
 
 
 app = QApplication(sys.argv)

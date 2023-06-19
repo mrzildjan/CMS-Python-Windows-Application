@@ -100,3 +100,53 @@ WHERE REC_ID = 105;
 
 
 =========================================================================================
+
+
+FUNCTION
+
+=========================================================================================
+
+CREATE OR REPLACE FUNCTION delete_pending_records()
+  RETURNS VOID AS
+$BODY$
+DECLARE
+    current_date_time TIMESTAMP := NOW();
+    one_week_interval INTERVAL := INTERVAL '1 week';
+BEGIN
+    UPDATE PLOT
+    SET plot_status = 'Available'
+    WHERE plot_id IN (
+        SELECT p.plot_id
+        FROM PLOT p
+        INNER JOIN TRANSACTION t ON p.plot_id = t.plot_id
+        WHERE t.trans_status = 'Pending'
+        AND t.trans_date < current_date_time - one_week_interval
+    ) AND plot_id NOT IN (
+        SELECT p.plot_id
+        FROM TRANSACTION t
+        INNER JOIN PLOT p ON p.plot_id = t.plot_id
+        WHERE t.trans_type = 'Booked'
+    );
+
+    DELETE FROM RELATIVE
+    WHERE rel_id IN (
+        SELECT r.rel_id
+        FROM RELATIVE r
+        INNER JOIN TRANSACTION t ON r.rel_id = t.rel_id
+        WHERE t.trans_status = 'Pending'
+        AND t.trans_date < current_date_time - one_week_interval
+    ) AND rel_id NOT IN (
+        SELECT r.rel_id
+        FROM TRANSACTION t
+        INNER JOIN RELATIVE r ON r.rel_id = t.rel_id
+        WHERE t.trans_type = 'Booked'
+    );
+
+    UPDATE TRANSACTION
+    SET trans_status = 'Cancelled'
+    WHERE trans_status = 'Pending'
+    AND trans_date < current_date_time - one_week_interval;
+END;
+$BODY$
+LANGUAGE plpgsql;
+
