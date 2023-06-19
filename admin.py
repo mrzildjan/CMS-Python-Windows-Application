@@ -863,7 +863,7 @@ class Reservation_management(QMainWindow):
     def display_reservation(self, plot_yard):
         query = f"SELECT TRANS_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, USER_FNAME, TRANS_STATUS, TRANS_DATE, TRANS_TYPE FROM USERS " \
                 f"INNER JOIN TRANSACTION USING(USER_ID)" \
-                f"INNER JOIN PLOT USING(PLOT_ID) WHERE PLOT_YARD = '{plot_yard}' ORDER BY TRANS_ID;"
+                f"INNER JOIN PLOT USING(PLOT_ID) WHERE PLOT_YARD = '{plot_yard}' AND TRANS_TYPE IN ('Reserved', 'Cancelled') ORDER BY TRANS_ID;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
@@ -1125,9 +1125,10 @@ class Booking_management(QMainWindow):
         show_page(admin_dash)
 
     def display_booking(self, plot_yard):
-        query = f"SELECT TRANS_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, USER_FNAME, TRANS_TYPE FROM USERS " \
+        query = f"SELECT TRANS_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, REL_FNAME, REL_DOB, REL_DATE_DEATH, REL_DATE_INTERMENT, TRANS_TYPE FROM USERS " \
                 f"INNER JOIN TRANSACTION USING(USER_ID)" \
-                f"INNER JOIN PLOT USING(PLOT_ID) WHERE PLOT_YARD = '{plot_yard}' ORDER BY TRANS_ID;"
+                f"INNER JOIN PLOT USING(PLOT_ID) " \
+                f"INNER JOIN RELATIVE USING(USER_ID) WHERE PLOT_YARD = '{plot_yard}' AND TRANS_TYPE = 'Booked' ORDER BY TRANS_ID DESC;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
@@ -1152,7 +1153,7 @@ class Booking_management(QMainWindow):
             # Populate the table with the fetched results
             for row_idx, row_data in enumerate(results):
                 for col_idx, col_data in enumerate(row_data):
-                    if col_idx == 5:  # "Transaction Type" column
+                    if col_idx == 8:  # "Transaction Type" column
                         # Create a QComboBox for the "Transaction Type" column
                         type_combobox = QComboBox()
                         type_combobox.addItems(type_mapping.values())
@@ -1239,91 +1240,131 @@ class Booking_page(QMainWindow):
             self.plot_status.setText("Available")
 
     def book_now(self):
-        # Get the values from the UI
         dec_fname = self.dec_fname.text()
         dec_mname = self.dec_mname.text()
         dec_lname = self.dec_lname.text()
         dec_dob = self.dec_dob.date().toString("yyyy-MM-dd")
         dec_dod = self.dec_dod.date().toString("yyyy-MM-dd")
         dec_doi = self.dec_doi.date().toString("yyyy-MM-dd")
-        user_id = get_current_user_id()
         plot_yard = self.plot_name.currentText()
         plot_row = self.plot_row.currentText()
         plot_col = self.plot_col.currentText()
         plot_status = self.plot_status.text()
+        user_id = get_current_user_id()
 
         if plot_status == "":
-            error_message = "Please choose a plot location."
+            error_message = "Please check and choose a plot location."
             show_error_message(error_message)
             return
 
-        if any(value == "" for value in
-               [dec_fname, dec_lname, dec_dob, dec_dod, dec_doi, plot_yard, plot_row, plot_col, plot_status]):
+        if any(value == "" for value in [plot_yard, plot_row, plot_col, plot_status]):
             # Display error message for null values
             error_message = "Please fill in all fields."
-            show_error_message(error_message)
-            return
-
-        if not (dec_fname.replace(" ", "").isalpha() and dec_lname.isalpha() and (
-                dec_mname == "" or dec_mname.isalpha())):
-            # Display error message for non-letter values
-            error_message = "Name fields should only contain letters."
             show_error_message(error_message)
             return
 
         if plot_status in ['Reserved', 'Booked']:
             error_message = "This plot is already reserved or booked."
             show_error_message(error_message)
-        elif plot_status == "Available":
-            # Check if the plot is already booked
-            existing_transaction_query = f"SELECT TRANS_ID FROM TRANSACTION WHERE PLOT_ID = (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}') AND TRANS_TYPE = 'Booked'"
-            existing_transaction_result = execute_query_fetch(existing_transaction_query)
+        elif not check_plot_existence(plot_yard, plot_row, plot_col):
+            # Insert into relative
+            relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+            relative_result = execute_query(relative_query)
+            # Insert the new plot
+            insert_plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
+                                VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
+            insert_plot_result = execute_query(insert_plot_query)
 
-            if existing_transaction_result:
-                # Update the existing booking
-                existing_transaction_id = existing_transaction_result[0][0]
-                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked', TRANS_STATUS = 'Paid', TRANS_DATE = '{current_date_time}', USER_ID = '{user_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
-                update_transaction_result = execute_query(update_transaction_query)
-
-                if update_transaction_result:
-                    # Booking successful
-                    success_message = "Booking successful!"
-                    show_success_message(success_message)
-
-                    self.goto_booking_management()
-                else:
-                    # Error message for failed execution
-                    error_message = "Booking failed. Please try again."
-                    show_error_message(error_message)
-            else:
-                # Insert a new booking
+            if insert_plot_result and relative_result:
+                # Insert a new reservation
                 insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, PLOT_ID) " \
                                            f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', " \
                                            f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
                 insert_transaction_result = execute_query(insert_transaction_query)
 
                 if insert_transaction_result:
+                    # Reservation successful
+                    success_message = "Booked successful!"
+                    show_success_message(success_message)
+
+                    self.goto_booking_management()
+                else:
+                    # Error message for failed execution
+                    error_message = "Booked failed. Please try again."
+                    show_error_message(error_message)
+            else:
+                # Error message for failed execution
+                error_message = "Booked failed. Please try again."
+                show_error_message(error_message)
+
+        elif plot_status == "Available":
+            # Check if the plot is already reserved or booked
+            existing_transaction_query = f"SELECT TRANS_ID FROM TRANSACTION WHERE PLOT_ID = (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}') AND TRANS_TYPE != 'Cancelled'"
+            existing_transaction_result = execute_query_fetch(existing_transaction_query)
+
+            if existing_transaction_result:
+                # Update relative
+                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
+                update_relative_result = execute_query(update_relative_query)
+
+                # Update the existing transaction
+                existing_transaction_id = existing_transaction_result[0][0]
+                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked', TRANS_STATUS = 'Paid', TRANS_DATE = '{current_date_time}', USER_ID = '{user_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
+                update_transaction_result = execute_query(update_transaction_query)
+
+                if update_transaction_result and update_relative_result:
                     # Update the plot status
-                    update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Booked' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
+                    update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Occupied' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
                     update_plot_result = execute_query(update_plot_query)
 
                     if update_plot_result:
-                        # Booking successful
-                        success_message = "Booking successful!"
+                        # Reservation successful
+                        success_message = "Booked successful!"
                         show_success_message(success_message)
 
                         self.goto_booking_management()
                     else:
                         # Error message for failed execution
-                        error_message = "Booking failed. Please try again."
+                        error_message = "Booked failed. Please try again."
                         show_error_message(error_message)
                 else:
                     # Error message for failed execution
-                    error_message = "Booking failed. Please try again."
+                    error_message = "Booked failed. Please try again."
+                    show_error_message(error_message)
+            else:
+                # Update relative
+                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
+                update_relative_result = execute_query(update_relative_query)
+
+                # Insert a new reservation
+                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, PLOT_ID) " \
+                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', " \
+                                           f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
+                insert_transaction_result = execute_query(insert_transaction_query)
+
+                if insert_transaction_result and update_relative_result:
+                    # Update the plot status
+                    update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Occupied' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
+                    update_plot_result = execute_query(update_plot_query)
+
+                    if update_plot_result:
+                        # Reservation successful
+                        success_message = "Booked successful!"
+                        show_success_message(success_message)
+
+                        self.goto_booking_management()
+                    else:
+                        # Error message for failed execution
+                        error_message = "Booked failed. Please try again."
+                        show_error_message(error_message)
+                else:
+                    # Error message for failed execution
+                    error_message = "Booked failed. Please try again."
                     show_error_message(error_message)
         else:
             # Invalid plot status
-            error_message = "Invalid plot status."
+            error_message = "This plot is already reserved or booked."
             show_error_message(error_message)
 
 
@@ -1357,8 +1398,11 @@ class View_transaction(QMainWindow):
                 self.reservation_table.setItem(row_idx, col_idx, item)
 
     def display_bookings(self):
-        query = f"SELECT T.TRANS_ID , P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, RL.REL_FNAME, RL.REL_MNAME, RL.REL_LNAME, RL.rel_dob, RL.rel_date_death FROM PLOT P \
-                INNER JOIN TRANSACTION T USING (PLOT_ID) INNER JOIN RELATIVE RL USING (REL_ID) WHERE T.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Booked' ORDER BY T.TRANS_ID, P.PLOT_DATE DESC;"
+        query = f"SELECT TRANS_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, REL_FNAME, REL_MNAME, REL_LNAME, REL_DOB, REL_DATE_DEATH " \
+                f"FROM USERS INNER JOIN TRANSACTION USING(USER_ID)" \
+                f"INNER JOIN PLOT USING(PLOT_ID)" \
+                f"INNER JOIN RELATIVE USING(USER_ID)" \
+                f"WHERE USER_ID = '{user_id}' AND TRANS_TYPE = 'Booked' ORDER BY TRANS_ID, PLOT_DATE DESC;;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
