@@ -1279,8 +1279,8 @@ class Booking_page(QMainWindow):
 
             if insert_plot_result and relative_result:
                 # Insert a new reservation
-                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, PLOT_ID) " \
-                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', " \
+                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
+                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', (SELECT MAX(rel_id) FROM RELATIVE), " \
                                            f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
                 insert_transaction_result = execute_query(insert_transaction_query)
 
@@ -1339,8 +1339,8 @@ class Booking_page(QMainWindow):
                 update_relative_result = execute_query(update_relative_query)
 
                 # Insert a new reservation
-                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, PLOT_ID) " \
-                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', " \
+                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
+                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', (SELECT MAX(rel_id) FROM RELATIVE)," \
                                            f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
                 insert_transaction_result = execute_query(insert_transaction_query)
 
