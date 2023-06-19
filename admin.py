@@ -18,7 +18,7 @@ logged_in_username = None
 logged_in_password = None
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -45,7 +45,7 @@ def execute_query_fetch(query):
 
 
 def execute_query(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -86,7 +86,7 @@ def get_current_user_id():
 
 
 def retrieve_latest_ids():
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password',
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14',
                             dbname='cms')  # change password
     cursor = conn.cursor()
 
@@ -355,7 +355,7 @@ class AdminDash(QMainWindow):
 
 
 def get_rel_id(plot_id):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password',
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14',
                             dbname='cms')  # change password
     cursor = conn.cursor()
 
@@ -1268,7 +1268,7 @@ class Booking_page(QMainWindow):
             error_message = "This plot is already reserved or booked."
             show_error_message(error_message)
         elif not check_plot_existence(plot_yard, plot_row, plot_col):
-            # Insert into relative
+            print("NO PLOT EXISTENCE")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                      VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             relative_result = execute_query(relative_query)
@@ -1305,13 +1305,14 @@ class Booking_page(QMainWindow):
             existing_transaction_result = execute_query_fetch(existing_transaction_query)
 
             if existing_transaction_result:
-                # Update relative
-                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
-                update_relative_result = execute_query(update_relative_query)
+                print("EXISTING TRANSACTION")
+                relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                         VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                update_relative_result = execute_query(relative_query)
 
                 # Update the existing transaction
                 existing_transaction_id = existing_transaction_result[0][0]
-                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked', TRANS_STATUS = 'Paid', TRANS_DATE = '{current_date_time}', USER_ID = '{user_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
+                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked', TRANS_STATUS = 'Paid', TRANS_DATE = '{current_date_time}', REL_ID = (SELECT MAX(REL_ID) FROM RELATIVE) , USER_ID = '{user_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
                 update_transaction_result = execute_query(update_transaction_query)
 
                 if update_transaction_result and update_relative_result:
@@ -1334,9 +1335,10 @@ class Booking_page(QMainWindow):
                     error_message = "Booked failed. Please try again."
                     show_error_message(error_message)
             else:
-                # Update relative
-                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
-                update_relative_result = execute_query(update_relative_query)
+                print("NOT EXISTING TRANSACTION")
+                relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                                        VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                update_relative_result = execute_query(relative_query)
 
                 # Insert a new reservation
                 insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
