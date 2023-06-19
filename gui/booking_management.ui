@@ -121,7 +121,7 @@ background-color: transparent;</string>
        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#ffffff;&quot;&gt;C&lt;/span&gt;&lt;span style=&quot; font-size:28pt; font-weight:600; color:#ffffff;&quot;&gt;EMASYS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
@@ -146,7 +146,7 @@ border: none</string>
        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#ffffff;&quot;&gt;__________________________________________&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
@@ -211,7 +211,7 @@ border: none</string>
         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#7a7a7a;&quot;&gt;____________________________________________________________________________________________________&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
@@ -236,7 +236,7 @@ background-color: transparent;</string>
         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:5px; margin-bottom:5px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:20pt; font-weight:600; color:#7a7a7a;&quot;&gt;Booking Management&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
@@ -293,6 +293,11 @@ border-radius:0px;
          <string>San Pablo</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Cancelled</string>
+        </property>
+       </item>
       </widget>
       <widget class="QPushButton" name="add_book_btn">
        <property name="geometry">
@@ -341,22 +346,28 @@ background-color: rgb(0, 106, 0)
        </property>
        <property name="font">
         <font>
-         <pointsize>20</pointsize>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>15</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 15pt &quot;MS Shell Dlg 2&quot;;</string>
        </property>
        <property name="alternatingRowColors">
         <bool>true</bool>
        </property>
        <property name="rowCount">
-        <number>4</number>
+        <number>0</number>
        </property>
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>132</number>
        </attribute>
-       <row/>
-       <row/>
-       <row/>
-       <row/>
+       <attribute name="verticalHeaderDefaultSectionSize">
+        <number>45</number>
+       </attribute>
        <column>
         <property name="text">
          <string>ID</string>
@@ -399,7 +410,7 @@ background-color: rgb(0, 106, 0)
        </column>
        <column>
         <property name="text">
-         <string>Decease's Name</string>
+         <string>Rel_ID</string>
         </property>
         <property name="font">
          <font>
@@ -413,7 +424,7 @@ background-color: rgb(0, 106, 0)
        </column>
        <column>
         <property name="text">
-         <string>Date of Birth</string>
+         <string>User_ID</string>
         </property>
         <property name="font">
          <font>
@@ -423,7 +434,7 @@ background-color: rgb(0, 106, 0)
        </column>
        <column>
         <property name="text">
-         <string>Date of Death</string>
+         <string>Plot Status</string>
         </property>
         <property name="font">
          <font>
@@ -433,7 +444,7 @@ background-color: rgb(0, 106, 0)
        </column>
        <column>
         <property name="text">
-         <string>Date of Interment</string>
+         <string>Date</string>
         </property>
         <property name="font">
          <font>
@@ -443,7 +454,7 @@ background-color: rgb(0, 106, 0)
        </column>
        <column>
         <property name="text">
-         <string>Payment</string>
+         <string>Action</string>
         </property>
         <property name="font">
          <font>

@@ -863,60 +863,85 @@ class Reservation_management(QMainWindow):
         show_page(admin_dash)
 
     def display_reservation(self, plot_yard):
-        query = f"SELECT TRANS_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, USER_FNAME, TRANS_STATUS, TRANS_DATE, TRANS_TYPE FROM USERS " \
-                f"INNER JOIN TRANSACTION USING(USER_ID)" \
-                f"INNER JOIN PLOT USING(PLOT_ID) WHERE PLOT_YARD = '{plot_yard}' AND TRANS_TYPE IN ('Reserved', 'Cancelled') ORDER BY TRANS_ID;"
+        if plot_yard == "Cancelled":
+            query = f"SELECT TRANS_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, USER_ID, TRANS_TYPE , TRANS_DATE FROM USERS " \
+                    f"INNER JOIN TRANSACTION USING(USER_ID)" \
+                    f"INNER JOIN PLOT USING(PLOT_ID) WHERE PLOT_ROW IN ('A','B','C','D','E') AND TRANS_TYPE = 'Cancelled' AND TRANS_STATUS = 'Pending' ORDER BY TRANS_ID;"
 
-        # Execute the query and fetch the results
-        results = execute_query_fetch(query)
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
+            print(results)
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
+                # Clear the existing table content
+                self.reservation_table.clearContents()
 
-        if not results:
-            message = 'No results found'
-            show_message_box(message)
-            return
-        else:
-            # Clear the existing table content
-            self.reservation_table.clearContents()
+                # Set the table row count to the number of fetched results
+                self.reservation_table.setRowCount(len(results))
 
-            # Set the table row count to the number of fetched results
-            self.reservation_table.setRowCount(len(results))
-
-            # Create a dictionary that maps the values from the TRANS_TYPE column to the display text in the dropdown
-            type_mapping = {
-                'reserved': 'Reserved',
-                'cancelled': 'Cancelled'
-            }
-
-            # Populate the table with the fetched results
-            for row_idx, row_data in enumerate(results):
-                for col_idx, col_data in enumerate(row_data):
-                    if col_idx == 7:  # "Transaction Type" column
-                        # Create a QComboBox for the "Transaction Type" column
-                        type_combobox = QComboBox()
-                        type_combobox.addItems(type_mapping.values())
-
-                        # Set the initial value of the QComboBox based on the fetched data
-                        trans_type = col_data.lower()
-                        if trans_type in type_mapping:
-                            index = type_combobox.findText(type_mapping[trans_type])
-                            if index >= 0:
-                                type_combobox.setCurrentIndex(index)
-
-                        # If the transaction type is "cancelled", disable the QComboBox
-                        if trans_type == 'cancelled':
-                            type_combobox.setEnabled(False)
-
-                        # Connect the currentIndexChanged signal to update the transaction type
-                        type_combobox.currentIndexChanged.connect(
-                            lambda index, row=row_data, type_combobox=type_combobox: self.update_transaction_type(
-                                row[0], type_combobox.currentText())
-                        )
-
-                        # Set the QComboBox as the item for the current cell
-                        self.reservation_table.setCellWidget(row_idx, col_idx, type_combobox)
-                    else:
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
                         item = QTableWidgetItem(str(col_data))
                         self.reservation_table.setItem(row_idx, col_idx, item)
+        else:
+            query = f"SELECT TRANS_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, USER_ID, TRANS_STATUS, TRANS_DATE, TRANS_TYPE FROM USERS " \
+                    f"INNER JOIN TRANSACTION USING(USER_ID)" \
+                    f"INNER JOIN PLOT USING(PLOT_ID) WHERE PLOT_YARD = '{plot_yard}' AND TRANS_TYPE IN ('Reserved') ORDER BY TRANS_ID;"
+
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
+
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
+                # Clear the existing table content
+                self.reservation_table.clearContents()
+
+                # Set the table row count to the number of fetched results
+                self.reservation_table.setRowCount(len(results))
+
+                # Create a dictionary that maps the values from the TRANS_TYPE column to the display text in the dropdown
+                type_mapping = {
+                    'reserved': 'Reserved',
+                    'cancelled': 'Cancelled'
+                }
+
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
+                        if col_idx == 7:  # "Transaction Type" column
+                            # Create a QComboBox for the "Transaction Type" column
+                            type_combobox = QComboBox()
+                            type_combobox.addItems(type_mapping.values())
+
+                            # Set the initial value of the QComboBox based on the fetched data
+                            trans_type = col_data.lower()
+                            if trans_type in type_mapping:
+                                index = type_combobox.findText(type_mapping[trans_type])
+                                if index >= 0:
+                                    type_combobox.setCurrentIndex(index)
+
+                            # If the transaction type is "cancelled", disable the QComboBox
+                            if trans_type == 'cancelled':
+                                type_combobox.setEnabled(False)
+
+                            # Connect the currentIndexChanged signal to update the transaction type
+                            type_combobox.currentIndexChanged.connect(
+                                lambda index, row=row_data, type_combobox=type_combobox: self.update_transaction_type(
+                                    row[0], type_combobox.currentText())
+                            )
+
+                            # Set the QComboBox as the item for the current cell
+                            self.reservation_table.setCellWidget(row_idx, col_idx, type_combobox)
+                        else:
+                            item = QTableWidgetItem(str(col_data))
+                            self.reservation_table.setItem(row_idx, col_idx, item)
 
     def update_transaction_type(self, trans_id, trans_type):
         # Check if the plot is already reserved or booked
@@ -1127,60 +1152,84 @@ class Booking_management(QMainWindow):
         show_page(admin_dash)
 
     def display_booking(self, plot_yard):
-        query = f"SELECT T.TRANS_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_FNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, T.TRANS_TYPE FROM TRANSACTION T INNER JOIN PLOT P ON T.PLOT_ID = P.PLOT_ID \
-                    INNER JOIN RELATIVE R ON T.REL_ID = R.REL_ID WHERE P.PLOT_YARD = '{plot_yard}' AND T.TRANS_TYPE = 'Booked' ORDER BY T.TRANS_ID DESC;"
+        if plot_yard == "Cancelled":
+            query = f"SELECT T.TRANS_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_ID, R.USER_ID, P.PLOT_STATUS, P.PLOT_DATE FROM TRANSACTION T INNER JOIN PLOT P ON T.PLOT_ID = P.PLOT_ID \
+                                    INNER JOIN RELATIVE R ON T.REL_ID = R.REL_ID WHERE T.TRANS_TYPE = 'Cancelled' AND TRANS_STATUS = 'Paid' ORDER BY T.TRANS_ID DESC;"
 
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
+            print(results)
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
+                # Clear the existing table content
+                self.bookingtable.clearContents()
 
-        # Execute the query and fetch the results
-        results = execute_query_fetch(query)
+                # Set the table row count to the number of fetched results
+                self.bookingtable.setRowCount(len(results))
 
-        if not results:
-            message = 'No results found'
-            show_message_box(message)
-            return
-        else:
-            # Clear the existing table content
-            self.bookingtable.clearContents()
-
-            # Set the table row count to the number of fetched results
-            self.bookingtable.setRowCount(len(results))
-
-            # Create a dictionary that maps the values from the TRANS_TYPE column to the display text in the dropdown
-            type_mapping = {
-                'booked': 'Booked',
-                'cancelled': 'Cancelled'
-            }
-
-            # Populate the table with the fetched results
-            for row_idx, row_data in enumerate(results):
-                for col_idx, col_data in enumerate(row_data):
-                    if col_idx == 8:  # "Transaction Type" column
-                        # Create a QComboBox for the "Transaction Type" column
-                        type_combobox = QComboBox()
-                        type_combobox.addItems(type_mapping.values())
-
-                        # Set the initial value of the QComboBox based on the fetched data
-                        trans_type = col_data.lower()
-                        if trans_type in type_mapping:
-                            index = type_combobox.findText(type_mapping[trans_type])
-                            if index >= 0:
-                                type_combobox.setCurrentIndex(index)
-
-                        # If the transaction type is "cancelled", disable the QComboBox
-                        if trans_type == 'cancelled':
-                            type_combobox.setEnabled(False)
-
-                        # Connect the currentIndexChanged signal to update the transaction type
-                        type_combobox.currentIndexChanged.connect(
-                            lambda index, row=row_data, type_combobox=type_combobox: self.update_transaction_type(
-                                row[0], type_combobox.currentText())
-                        )
-
-                        # Set the QComboBox as the item for the current cell
-                        self.bookingtable.setCellWidget(row_idx, col_idx, type_combobox)
-                    else:
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
                         item = QTableWidgetItem(str(col_data))
                         self.bookingtable.setItem(row_idx, col_idx, item)
+        else:
+            query = f"SELECT T.TRANS_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_ID, R.USER_ID, P.PLOT_STATUS, P.PLOT_DATE, T.TRANS_TYPE FROM TRANSACTION T INNER JOIN PLOT P ON T.PLOT_ID = P.PLOT_ID \
+                        INNER JOIN RELATIVE R ON T.REL_ID = R.REL_ID WHERE P.PLOT_YARD = '{plot_yard}' AND T.TRANS_TYPE = 'Booked' ORDER BY T.TRANS_ID DESC;"
+
+
+            # Execute the query and fetch the results
+            results = execute_query_fetch(query)
+
+            if not results:
+                message = 'No results found'
+                show_message_box(message)
+                return
+            else:
+                # Clear the existing table content
+                self.bookingtable.clearContents()
+
+                # Set the table row count to the number of fetched results
+                self.bookingtable.setRowCount(len(results))
+
+                # Create a dictionary that maps the values from the TRANS_TYPE column to the display text in the dropdown
+                type_mapping = {
+                    'booked': 'Booked',
+                    'cancelled': 'Cancelled'
+                }
+
+                # Populate the table with the fetched results
+                for row_idx, row_data in enumerate(results):
+                    for col_idx, col_data in enumerate(row_data):
+                        if col_idx == 8:  # "Transaction Type" column
+                            # Create a QComboBox for the "Transaction Type" column
+                            type_combobox = QComboBox()
+                            type_combobox.addItems(type_mapping.values())
+
+                            # Set the initial value of the QComboBox based on the fetched data
+                            trans_type = col_data.lower()
+                            if trans_type in type_mapping:
+                                index = type_combobox.findText(type_mapping[trans_type])
+                                if index >= 0:
+                                    type_combobox.setCurrentIndex(index)
+
+                            # If the transaction type is "cancelled", disable the QComboBox
+                            if trans_type == 'cancelled':
+                                type_combobox.setEnabled(False)
+
+                            # Connect the currentIndexChanged signal to update the transaction type
+                            type_combobox.currentIndexChanged.connect(
+                                lambda index, row=row_data, type_combobox=type_combobox: self.update_transaction_type(
+                                    row[0], type_combobox.currentText())
+                            )
+
+                            # Set the QComboBox as the item for the current cell
+                            self.bookingtable.setCellWidget(row_idx, col_idx, type_combobox)
+                        else:
+                            item = QTableWidgetItem(str(col_data))
+                            self.bookingtable.setItem(row_idx, col_idx, item)
 
     def update_transaction_type(self, trans_id, trans_type):
         # Check if the plot is already reserved or booked
@@ -1428,7 +1477,7 @@ def call_delete_pending_records():
             host="localhost",
             database="cms",
             user="postgres",
-            password="password"
+            password='johnjohnkaye14'
         )
 
         # Create a cursor to interact with the database

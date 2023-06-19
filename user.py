@@ -15,7 +15,7 @@ logged_in_username = None
 logged_in_password = None
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
     cursor = conn.cursor()
 
     try:
@@ -42,7 +42,7 @@ def execute_query_fetch(query):
 
 
 def execute_query(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
     cursor = conn.cursor()
 
     try:
@@ -82,7 +82,7 @@ def get_current_user_id():
         return None
 
 def retrieve_latest_ids():
-    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')  # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')  # change password
     cursor = conn.cursor()
 
     # Retrieve the latest plot_id and rel_id from their respective tables
