@@ -16,7 +16,7 @@ logged_in_username = None
 logged_in_password = None
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -43,7 +43,7 @@ def execute_query_fetch(query):
 
 
 def execute_query(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms') # change password
     cursor = conn.cursor()
 
     try:
@@ -83,7 +83,7 @@ def get_current_user_id():
         return None
 
 def retrieve_latest_ids():
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')  # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')  # change password
     cursor = conn.cursor()
 
     # Retrieve the latest plot_id and rel_id from their respective tables
@@ -740,12 +740,15 @@ class VerificationDialog(QDialog):
         username = self.username_input.text()
         password = self.password_input.text()
 
-        # Replace this with your own database verification logic
-        if username == "superadmin" and password == "superadmin":
+        query = f"SELECT * FROM users WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}' AND user_is_admin = TRUE"
+
+        # Execute the query and fetch the results
+        result = execute_query_fetch(query)
+
+        if result:
             super(VerificationDialog, self).accept()
         else:
             show_error_message("INVALID VERIFICATION")
-
 
 
 class Book_interment(QMainWindow):
@@ -802,11 +805,11 @@ class Book_interment(QMainWindow):
         elif not check_plot_existence(plot_yard, plot_row, plot_col):
             print("NO PLOT EXISTENCE")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                                                             VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             relative_result = execute_query(relative_query)
             # Insert the new plot
             insert_plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                                VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
+                                        VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
             insert_plot_result = execute_query(insert_plot_query)
 
             record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
@@ -844,7 +847,7 @@ class Book_interment(QMainWindow):
             if existing_transaction_result:
                 print("EXISTING TRANSACTION")
                 relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                                                         VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                                                                 VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
                 update_relative_result = execute_query(relative_query)
 
                 # Update the existing transaction
@@ -874,7 +877,7 @@ class Book_interment(QMainWindow):
             else:
                 print("NOT EXISTING TRANSACTION")
                 relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                                                                        VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                                                                                VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
                 update_relative_result = execute_query(relative_query)
 
                 # Insert a new reservation
@@ -967,11 +970,11 @@ class Plot_reservation(QMainWindow):
         elif not check_plot_existence(plot_yard, plot_row, plot_col):
             # Insert into relative
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                                                             VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             relative_result = execute_query(relative_query)
             # Insert the new plot
             insert_plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                                        VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
+                                                VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
             insert_plot_result = execute_query(insert_plot_query)
 
             if insert_plot_result and relative_result:
@@ -1002,9 +1005,10 @@ class Plot_reservation(QMainWindow):
             existing_transaction_result = execute_query_fetch(existing_transaction_query)
 
             if existing_transaction_result:
-                # Update relative
-                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
-                update_relative_result = execute_query(update_relative_query)
+                # Insert into relative
+                relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                                                   VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                update_relative_result = execute_query(relative_query)
 
                 # Update the existing transaction
                 existing_transaction_id = existing_transaction_result[0][0]
@@ -1031,9 +1035,10 @@ class Plot_reservation(QMainWindow):
                     error_message = "Reservation failed. Please try again."
                     show_error_message(error_message)
             else:
-                # Update relative
-                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
-                update_relative_result = execute_query(update_relative_query)
+                # Insert into relative
+                relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                                                                   VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                update_relative_result = execute_query(relative_query)
 
                 # Insert a new reservation
                 insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \

@@ -15,7 +15,7 @@ current_date_time = datetime.now()
 
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -42,7 +42,7 @@ def execute_query_fetch(query):
 
 
 def execute_query(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -91,7 +91,7 @@ def get_admin_id(username, password):
 
 
 def retrieve_latest_ids():
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14',
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password',
                             dbname='cms')  # change password
     cursor = conn.cursor()
 
@@ -306,7 +306,7 @@ def show_message_box(message):
 #             return
 #
 #         # Check if username already exists
-#         select_query = f"SELECT COUNT(*) FROM USERS WHERE USER_USERNAME = '{username}'"
+    #         select_query = f"SELECT COUNT(*) FROM USERS WHERE USER_USERNAME = '{username}'"
 #         result = execute_query_fetch(select_query)
 #
 #         if result is not None and result[0][0] > 0:
@@ -381,7 +381,7 @@ class AdminDash(QMainWindow):
 
 
 def get_rel_id(plot_id):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14',
+    conn = psycopg2.connect(host='localhost', user='postgres', password='password',
                             dbname='cms')  # change password
     cursor = conn.cursor()
 
@@ -455,7 +455,7 @@ class Record_management(QMainWindow):
     def display_exhumation(self, date_now):
 
         query = f"SELECT REC.PLOT_ID,  R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION, REC.REC_STATUS\
-                       FROM RECORD REC INNER JOIN RELATIVE R USING(REL_ID) WHERE R.REL_DATE_EXHUMATION = '{date_now}' ;"
+                       FROM RECORD REC INNER JOIN RELATIVE R USING(REL_ID) WHERE R.REL_DATE_EXHUMATION <= '{date_now}' AND REC.REC_STATUS != 'Exhumed' ;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
@@ -518,11 +518,13 @@ class Record_management(QMainWindow):
 
     def update_plot_status(self, plot_id, status):
         rel_id = get_rel_id(plot_id)
+        print(status)
         if status == 'Buried':
             rec_query = f"UPDATE RECORD SET REC_STATUS = '{status}' WHERE PLOT_ID = '{plot_id}';"
             stat = 'Occupied'
             plot_query = f"UPDATE PLOT SET PLOT_STATUS = '{stat}' WHERE PLOT_ID = '{plot_id}';"
             buried_result = execute_query(rec_query), execute_query(plot_query)
+
 
         else:
             print(rel_id)
@@ -1187,9 +1189,10 @@ class Reservation_page(QMainWindow):
             existing_transaction_result = execute_query_fetch(existing_transaction_query)
 
             if existing_transaction_result:
-                # Update relative
-                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{admin_id}'"
-                update_relative_result = execute_query(update_relative_query)
+                # Insert into relative
+                relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                                                                  VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
+                update_relative_result = execute_query(relative_query)
 
                 # Update the existing transaction
                 existing_transaction_id = existing_transaction_result[0][0]
@@ -1216,9 +1219,10 @@ class Reservation_page(QMainWindow):
                     error_message = "Reservation failed. Please try again."
                     show_error_message(error_message)
             else:
-                # Update relative
-                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{admin_id}'"
-                update_relative_result = execute_query(update_relative_query)
+                # Insert into relative
+                relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                                                                                   VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
+                update_relative_result = execute_query(relative_query)
 
                 # Insert a new reservation
                 insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
@@ -1645,7 +1649,7 @@ def call_delete_pending_records():
             host="localhost",
             database="cms",
             user="postgres",
-            password='johnjohnkaye14'
+            password='password'
             )
 
         # Create a cursor to interact with the database
