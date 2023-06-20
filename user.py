@@ -2,20 +2,21 @@ import datetime
 import sys
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QPushButton
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QPushButton, QDialog, QVBoxLayout, \
+    QLabel, QLineEdit
+from PyQt5.QtGui import QIcon, QFont
 import psycopg2
 import re
 from datetime import date, datetime
 
-current_date = date.today()
+current_date_time = datetime.now()
 
 # Define the global variable
 logged_in_username = None
 logged_in_password = None
 
 def execute_query_fetch(query):
-    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms') # change password
+    conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')
     cursor = conn.cursor()
 
     try:
@@ -198,17 +199,39 @@ class Login(QMainWindow):
 
             # Check if a matching row is found
             if results:
+                user_data = results[0][8]  # Retrieve the dictionary from the tuple
+                is_admin = user_data
+                print(is_admin)
+
                 # Store the values in global variables
                 logged_in_username = username
                 logged_in_password = password
 
-                # Successful login, redirect to dashboard
-                self.goto_dashboard()
+                if is_admin:
+                    from admin import AdminDash
+                    admin = AdminDash()
+                    show_page(admin)
+                    widget.close()
 
+                    import admin
+
+                    admin_id = admin.get_admin_id(logged_in_username, logged_in_password)
+                    if admin_id is not None:
+                        # Do something with the user_id
+                        print("admin_id ID:", admin_id)
+                    else:
+                        # Handle the case when the user is not found
+                        print("admin not found")
+
+                else:
+                    print("user id")
+                    print(get_current_user_id())
+                    self.goto_dashboard()
             else:
                 # Invalid login, show error message
                 error_message = "Invalid username or password. Please try again."
                 show_error_message(error_message)
+
 
         except Exception as e:
             # Handle any exceptions during database operations
@@ -233,66 +256,84 @@ class Register(QMainWindow):
         last_name = self.txtlname.text()
         mid_name = self.txtmid.text()
         number = self.txtnumber.text()
-        address = self.txtaddress.text()
+        address = self.txtaddress.text().lower()
         username = self.txtusername.text()
         password = self.txtpass.text()
         confirmpass = self.txtconfirm.text()
 
-        try:
-            # Check for null values in input fields
-            if any(value == "" for value in [first_name, last_name, number, address, username, password, confirmpass]):
-                # Display error message for null values
-                error_message = "Please fill in all fields."
-                show_error_message(error_message)
-                return
+        # Check for null values in input fields
+        if any(value == "" for value in [first_name, last_name, number, address, username, password, confirmpass]):
+            # Display error message for null values
+            error_message = "Please fill in all fields."
+            show_error_message(error_message)
+            return
 
-            if not (first_name.replace(" ", "").isalpha() and last_name.isalpha() and (mid_name == "" or mid_name.isalpha())):
-                # Display error message for non-letter values
-                error_message = "Name fields should only contain letters."
-                show_error_message(error_message)
-                return
+        if not (first_name.replace(" ", "").isalpha() and last_name.isalpha() and (
+                mid_name == "" or mid_name.isalpha())):
+            # Display error message for non-letter values
+            error_message = "Name fields should only contain letters."
+            show_error_message(error_message)
+            return
 
-            # Validate number field
-            if not number.isdigit():
-                # Display error message for non-digit number
-                error_message = "Mobile Number should only contain digits."
-                show_error_message(error_message)
-                return
+        # Validate number field
+        if number.startswith('+63'):
+            # Convert "+639760961509" to "09760961509"
+            number = '0' + number[3:]  # Replace "+63" with "0"
+        elif number.startswith('0'):
+            # Remove any spaces or special characters in the phone number
+            number = re.sub(r'\D', '', number)
+        else:
+            # Display error message for invalid number format
+            error_message = "Invalid phone number format. Please enter a valid Philippine number."
+            show_error_message(error_message)
+            return
 
-            # Validate email address
-            email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-            if not re.match(email_regex, address):
-                error_message = "Invalid email address. Please enter a valid email."
-                show_error_message(error_message)
-                return
+        if not number.isdigit() or len(number) != 11 or not number.startswith('09'):
+            # Display error message for invalid number
+            error_message = "Phone number should start with '09' and have a total of 11 digits."
+            show_error_message(error_message)
+            return
 
-            if password == confirmpass:
-                # Insert the data into the USERS table
-                insert_query = f"INSERT INTO USERS (USER_FNAME, USER_MNAME, USER_LNAME, USER_NUMBER, USER_EMAIL, " \
-                               f"USER_USERNAME, USER_PASSWORD, USER_CREATED_AT, USER_UPDATED_AT) " \
-                               f"VALUES ('{first_name}', '{mid_name}', '{last_name}', '{number}', '{address}', " \
-                               f"'{username}', '{password}', '{current_date}', '{current_date}')"
+        # Validate email address
+        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_regex, address):
+            error_message = "Invalid email address. Please enter a valid email."
+            show_error_message(error_message)
+            return
 
-                # Execute the query and check if it was successful
-                if execute_query(insert_query):
-                    # Registration successful message
-                    success_message = "Registration Successful!"
-                    show_success_message(success_message)
+        # Check if username already exists
+        select_query = f"SELECT COUNT(*) FROM USERS WHERE USER_USERNAME = '{username}'"
+        result = execute_query_fetch(select_query)
 
-                    self.goto_login_page()
-                else:
-                    # Error message for failed execution
-                    error_message = "Registration failed. Please try again."
-                    show_error_message(error_message)
+        if result is not None and result[0][0] > 0:
+            # Display error message for existing username
+            error_message = "Username already exists. Please choose a different username."
+            show_error_message(error_message)
+            return
 
+        if password == confirmpass:
+            # Insert the data into the USERS table
+            insert_query = f"INSERT INTO USERS (USER_FNAME, USER_MNAME, USER_LNAME, USER_NUMBER, USER_EMAIL, " \
+                           f"USER_USERNAME, USER_PASSWORD, USER_CREATED_AT, USER_UPDATED_AT) " \
+                           f"VALUES ('{first_name}', '{mid_name}', '{last_name}', '{number}', '{address}', " \
+                           f"'{username}', '{password}', '{current_date_time}', '{current_date_time}')"
+
+            # Execute the query and check if it was successful
+            if execute_query(insert_query):
+                # Registration successful message
+                success_message = "Registration Successful!"
+                show_success_message(success_message)
+
+                self.goto_login_page()
             else:
-                # Passwords don't match, show error message
-                error_message = "Passwords do not match. Please try again."
+                # Error message for failed execution
+                error_message = "Registration failed. Please try again."
                 show_error_message(error_message)
 
-        except (Exception, psycopg2.Error) as error:
-            # Error message in case of failure
-            QtWidgets.QMessageBox.critical(self, "Error", f"Registration Failed!\n\nError Message: {str(error)}")
+        else:
+            # Passwords don't match, show error message
+            error_message = "Passwords do not match. Please try again."
+            show_error_message(error_message)
 
 
 class UserDash(QMainWindow):
@@ -644,9 +685,16 @@ class Booking_services(QMainWindow):
     def __init__(self):
         super(Booking_services, self).__init__()
         loadUi("gui/bookservices.ui", self)
-        self.bookforintermentbtn.clicked.connect(self.goto_book_interment)
+        self.bookforintermentbtn.clicked.connect(self.show_login)
         self.plotreservationbtn.clicked.connect(self.goto_plot_reservation)
         self.backbtn.clicked.connect(goto_user_dash)
+
+    def show_login(self):
+        login_dialog = VerificationDialog()
+        if login_dialog.exec_() == QDialog.Accepted:
+            self.goto_book_interment()
+        else:
+            show_error_message("Invalid verification")
 
     def goto_book_interment(self):
         book_interment = Book_interment()
@@ -654,6 +702,50 @@ class Booking_services(QMainWindow):
     def goto_plot_reservation(self):
         plot_reservation = Plot_reservation()
         show_page(plot_reservation)
+
+class VerificationDialog(QDialog):
+    def __init__(self):
+        super(VerificationDialog, self).__init__()
+        self.setWindowTitle("VERIFICATION")
+        layout = QVBoxLayout()
+
+        note_label = QLabel("Kindly request assistance to facilitate the booking process.")
+        note_label.setFont(QFont("Arial", 15))  # Increase font size to 12
+        layout.addWidget(note_label)
+
+        self.username_label = QLabel("Username:")
+        self.username_label.setFont(QFont("Arial", 12))  # Increase font size to 12
+        self.username_input = QLineEdit()
+        self.username_input.setMinimumHeight(30)
+        self.username_input.setMinimumWidth(200)  # Increase input area width to 200
+        layout.addWidget(self.username_label)
+        layout.addWidget(self.username_input)
+
+        self.password_label = QLabel("Password:")
+        self.password_label.setFont(QFont("Arial", 12))  # Increase font size to 12
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setMinimumHeight(30)  # Increase input area height to 30
+        self.password_input.setMinimumWidth(200)  # Increase input area width to 200
+        layout.addWidget(self.password_label)
+        layout.addWidget(self.password_input)
+
+        self.login_button = QPushButton("VERIFY")
+        self.login_button.clicked.connect(self.accept)
+        layout.addWidget(self.login_button)
+
+        self.setLayout(layout)
+
+    def accept(self):
+        username = self.username_input.text()
+        password = self.password_input.text()
+
+        # Replace this with your own database verification logic
+        if username == "superadmin" and password == "superadmin":
+            super(VerificationDialog, self).accept()
+        else:
+            show_error_message("INVALID VERIFICATION")
+
 
 
 class Book_interment(QMainWindow):
@@ -694,59 +786,131 @@ class Book_interment(QMainWindow):
         plot_status = self.plot_status.text()
 
         if plot_status == "":
-            error_message = "Please Choose Plot Location"
+            error_message = "Please check and choose a plot location."
             show_error_message(error_message)
             return
 
-        if any(value == "" for value in
-               [dec_fname, dec_lname, dec_dob, dec_dod, dec_doi, plot_yard, plot_row, plot_col, plot_status]):
+        if any(value == "" for value in [plot_yard, plot_row, plot_col, plot_status]):
             # Display error message for null values
             error_message = "Please fill in all fields."
             show_error_message(error_message)
             return
 
-        if not (dec_fname.replace(" ", "").isalpha() and dec_lname.isalpha() and (dec_mname == "" or dec_mname.isalpha())):
-            # Display error message for non-letter values
-            error_message = "Name fields should only contain letters."
+        if plot_status in ['Reserved', 'Booked']:
+            error_message = "This plot is already reserved or booked."
             show_error_message(error_message)
-            return
-
-        # Check if the plot already exists
-        if check_plot_existence(plot_yard, plot_row, plot_col):
-            error_message = "Chosen Plot is Unavailable, Please select a different plot."
-            show_error_message(error_message)
-        else:
-            current_date_time = datetime.now()
+        elif not check_plot_existence(plot_yard, plot_row, plot_col):
+            print("NO PLOT EXISTENCE")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                              VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
-            plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
-
-            # Execute the queries
+                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             relative_result = execute_query(relative_query)
-            plot_result = execute_query(plot_query)
+            # Insert the new plot
+            insert_plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
+                                VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
+            insert_plot_result = execute_query(insert_plot_query)
 
-            latest_plot_id, latest_rel_id = retrieve_latest_ids()
             record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
-                           f"VALUES ('{current_date}', 500.00, 'Buried', '{latest_plot_id}', '{latest_rel_id}', '{user_id}');"
+                           f"VALUES ('{current_date_time}', 500.00, 'Buried', (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'), (SELECT MAX(rel_id) FROM RELATIVE), '{user_id}');"
 
-            transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
-                                f"VALUES ( 'Booked'  , 'Fully Paid' , '{current_date}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
+            insert_record = execute_query(record_query)
 
-            record_result = execute_query(record_query)
-            transaction_result = execute_query(transaction_query)
+            if insert_plot_result and relative_result and insert_record:
+                # Insert a new reservation
+                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
+                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', (SELECT MAX(rel_id) FROM RELATIVE), " \
+                                           f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
+                insert_transaction_result = execute_query(insert_transaction_query)
 
-            # Check if the queries were successful
-            if relative_result and plot_result and record_result and transaction_result:
-                # Booking successful
-                success_message = "Booking Successful!"
-                show_success_message(success_message)
+                if insert_transaction_result:
+                    # Reservation successful
+                    success_message = "Booked successful!"
+                    show_success_message(success_message)
 
-                self.goto_booking_services()
+                    self.goto_booking_services()
+                else:
+                    # Error message for failed execution
+                    error_message = "Booked failed. Please try again."
+                    show_error_message(error_message)
             else:
                 # Error message for failed execution
-                error_message = "Booking Failed, Please try again."
+                error_message = "Booked failed. Please try again."
                 show_error_message(error_message)
+
+        elif plot_status == "Available":
+            # Check if the plot is already reserved or booked
+            existing_transaction_query = f"SELECT TRANS_ID FROM TRANSACTION WHERE PLOT_ID = (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}') AND TRANS_TYPE != 'Cancelled'"
+            existing_transaction_result = execute_query_fetch(existing_transaction_query)
+
+            if existing_transaction_result:
+                print("EXISTING TRANSACTION")
+                relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                         VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                update_relative_result = execute_query(relative_query)
+
+                # Update the existing transaction
+                existing_transaction_id = existing_transaction_result[0][0]
+                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked', TRANS_STATUS = 'Paid', TRANS_DATE = '{current_date_time}', REL_ID = (SELECT MAX(REL_ID) FROM RELATIVE) , USER_ID = '{user_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
+                update_transaction_result = execute_query(update_transaction_query)
+
+                if update_transaction_result and update_relative_result:
+                    # Update the plot status
+                    update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Occupied' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
+                    update_plot_result = execute_query(update_plot_query)
+
+                    if update_plot_result:
+                        # Reservation successful
+                        success_message = "Booked successful!"
+                        show_success_message(success_message)
+
+                        self.goto_booking_services()
+                    else:
+                        # Error message for failed execution
+                        error_message = "Booked failed. Please try again."
+                        show_error_message(error_message)
+                else:
+                    # Error message for failed execution
+                    error_message = "Booked failed. Please try again."
+                    show_error_message(error_message)
+            else:
+                print("NOT EXISTING TRANSACTION")
+                relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                                        VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                update_relative_result = execute_query(relative_query)
+
+                # Insert a new reservation
+                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
+                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', (SELECT MAX(rel_id) FROM RELATIVE)," \
+                                           f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
+                insert_transaction_result = execute_query(insert_transaction_query)
+
+                record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
+                               f"VALUES ('{current_date_time}', 500.00, 'Buried', (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'), (SELECT MAX(rel_id) FROM RELATIVE), '{user_id}');"
+
+                insert_record = execute_query(record_query)
+
+                if insert_transaction_result and update_relative_result and insert_record:
+                    # Update the plot status
+                    update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Occupied' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
+                    update_plot_result = execute_query(update_plot_query)
+
+                    if update_plot_result:
+                        # Reservation successful
+                        success_message = "Booked successful!"
+                        show_success_message(success_message)
+
+                        self.goto_booking_services()
+                    else:
+                        # Error message for failed execution
+                        error_message = "Booked failed. Please try again."
+                        show_error_message(error_message)
+                else:
+                    # Error message for failed execution
+                    error_message = "Booked failed. Please try again."
+                    show_error_message(error_message)
+        else:
+            # Invalid plot status
+            error_message = "This plot is already reserved or booked."
+            show_error_message(error_message)
 
 
 class Plot_reservation(QMainWindow):
@@ -787,56 +951,120 @@ class Plot_reservation(QMainWindow):
         user_id = get_current_user_id()
 
         if plot_status == "":
-            error_message = "Please Choose Plot Location"
+            error_message = "Please check and choose a plot location."
             show_error_message(error_message)
             return
 
-        if any(value == "" for value in
-               [plot_yard, plot_row, plot_col, plot_status]):
+        if any(value == "" for value in [plot_yard, plot_row, plot_col, plot_status]):
             # Display error message for null values
             error_message = "Please fill in all fields."
             show_error_message(error_message)
             return
 
-        if not (dec_fname.replace(" ", "").isalpha() and dec_lname.isalpha() and (
-                dec_mname == "" or dec_mname.isalpha())):
-            # Display error message for non-letter values
-            error_message = "Name fields should only contain letters."
+        if plot_status in ['Reserved', 'Booked']:
+            error_message = "This plot is already reserved or booked."
             show_error_message(error_message)
-            return
-
-        # Check if the plot already exists
-        if check_plot_existence(plot_yard, plot_row, plot_col):
-            error_message = "Chosen Plot is Unavailable, Please select a different plot."
-            show_error_message(error_message)
-        else:
-            current_date_time = datetime.now()
+        elif not check_plot_existence(plot_yard, plot_row, plot_col):
+            # Insert into relative
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                                          VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
-            plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
-            # Execute the queries
+                                                             VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             relative_result = execute_query(relative_query)
-            plot_result = execute_query(plot_query)
+            # Insert the new plot
+            insert_plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
+                                        VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
+            insert_plot_result = execute_query(insert_plot_query)
 
-            latest_plot_id, latest_rel_id = retrieve_latest_ids()
-            transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
-                                f"VALUES ( 'Reserved'  , 'Pending' , '{current_date}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
+            if insert_plot_result and relative_result:
+                # Insert a new reservation
+                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
+                                           f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', (SELECT MAX(rel_id) FROM RELATIVE), " \
+                                           f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
+                insert_transaction_result = execute_query(insert_transaction_query)
 
-            # Execute the queries
-            transaction_result = execute_query(transaction_query)
+                if insert_transaction_result:
+                    # Reservation successful
+                    success_message = "Reservation successful!"
+                    show_success_message(success_message)
 
-            # Check if the queries were successful
-            if plot_result and transaction_result and relative_result:
-                # Booking successful
-                success_message = "Reservation Successful!"
-                show_success_message(success_message)
-
-                self.goto_booking_services()
+                    self.goto_booking_services()
+                else:
+                    # Error message for failed execution
+                    error_message = "Reservation failed. Please try again."
+                    show_error_message(error_message)
             else:
                 # Error message for failed execution
-                error_message = "Reservation Failed, Please try again."
+                error_message = "Reservation failed. Please try again."
                 show_error_message(error_message)
+
+        elif plot_status == "Available":
+            # Check if the plot is already reserved or booked
+            existing_transaction_query = f"SELECT TRANS_ID FROM TRANSACTION WHERE PLOT_ID = (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}') AND TRANS_TYPE != 'Cancelled'"
+            existing_transaction_result = execute_query_fetch(existing_transaction_query)
+
+            if existing_transaction_result:
+                # Update relative
+                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
+                update_relative_result = execute_query(update_relative_query)
+
+                # Update the existing transaction
+                existing_transaction_id = existing_transaction_result[0][0]
+                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Reserved', TRANS_STATUS = 'Pending', TRANS_DATE = '{current_date_time}', REL_ID = (SELECT MAX(REL_ID) FROM RELATIVE), USER_ID = '{user_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
+                update_transaction_result = execute_query(update_transaction_query)
+
+                if update_transaction_result and update_relative_result:
+                    # Update the plot status
+                    update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Occupied' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
+                    update_plot_result = execute_query(update_plot_query)
+
+                    if update_plot_result:
+                        # Reservation successful
+                        success_message = "Reservation successful!"
+                        show_success_message(success_message)
+
+                        self.goto_booking_services()
+                    else:
+                        # Error message for failed execution
+                        error_message = "Reservation failed. Please try again."
+                        show_error_message(error_message)
+                else:
+                    # Error message for failed execution
+                    error_message = "Reservation failed. Please try again."
+                    show_error_message(error_message)
+            else:
+                # Update relative
+                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
+                update_relative_result = execute_query(update_relative_query)
+
+                # Insert a new reservation
+                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
+                                           f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', (SELECT MAX(rel_id) FROM RELATIVE), " \
+                                           f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
+                insert_transaction_result = execute_query(insert_transaction_query)
+
+                if insert_transaction_result and update_relative_result:
+                    # Update the plot status
+                    update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Occupied' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
+                    update_plot_result = execute_query(update_plot_query)
+
+                    if update_plot_result:
+                        # Reservation successful
+                        success_message = "Reservation successful!"
+                        show_success_message(success_message)
+
+                        self.goto_booking_services()
+                    else:
+                        # Error message for failed execution
+                        error_message = "Reservation failed. Please try again."
+                        show_error_message(error_message)
+                else:
+                    # Error message for failed execution
+                    error_message = "Reservation failed. Please try again."
+                    show_error_message(error_message)
+        else:
+            # Invalid plot status
+            error_message = "This plot is already reserved or booked."
+            show_error_message(error_message)
+
 
 class Map_view(QMainWindow):
     def __init__(self):
@@ -854,11 +1082,12 @@ class Transaction_page(QMainWindow):
         user_id = get_current_user_id()
         self.display_reservations()
         self.display_bookings()
+        self.reservation.setVisible(True)
+        self.pending.setVisible(False)
 
     def display_reservations(self):
-        query = f"SELECT T.TRANS_ID , P.PLOT_ID, R.REL_ID, R.REL_FNAME, R.REL_LNAME,  T.TRANS_STATUS FROM PLOT P INNER JOIN TRANSACTION T USING (PLOT_ID) \
-                INNER JOIN RELATIVE R USING(REL_ID) WHERE T.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Reserved' ORDER BY T.TRANS_ID,  P.PLOT_DATE DESC;"
-
+        query = f"SELECT U.USER_ID , P.PLOT_ID, R.REL_ID, R.REL_FNAME, R.REL_LNAME,  T.TRANS_STATUS FROM PLOT P INNER JOIN TRANSACTION T USING (PLOT_ID) \
+                INNER JOIN RELATIVE R USING(REL_ID) INNER JOIN USERS U ON U.USER_ID = T.USER_ID WHERE U.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Reserved' ORDER BY T.TRANS_ID,  P.PLOT_DATE DESC;"
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
 
@@ -869,51 +1098,11 @@ class Transaction_page(QMainWindow):
         self.reservation_table.setRowCount(len(results))
 
         # Populate the table with the fetched results
+        # Populate the table with the fetched results
         for row_idx, row_data in enumerate(results):
             for col_idx, col_data in enumerate(row_data):
                 item = QTableWidgetItem(str(col_data))
                 self.reservation_table.setItem(row_idx, col_idx, item)
-
-            # Create and set the button in the last column of each row
-            button = QPushButton("Book")
-            button.setProperty("plot_id", str(row_data[1]))  # Set the PLOT_ID as a custom property
-            button.setProperty("rel_id", str(row_data[2]))  # Set the REL_ID as a custom property
-            button.setStyleSheet("background-color: green; color: white;")
-
-            button.clicked.connect(self.book_reservation)
-            self.reservation_table.setCellWidget(row_idx, len(row_data), button)
-
-    def book_reservation(self):
-        # Get the sender button from the signal
-        button = self.sender()
-
-        # Get the row index of the clicked button
-        row_idx = self.reservation_table.indexAt(button.pos()).row()
-
-        # Retrieve the PLOT_ID and REL_ID from the custom properties of the button
-        plot_id = button.property("plot_id")
-        rel_id = button.property("rel_id")
-
-        record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
-                       f"VALUES ('{current_date}', 500.00, 'Buried', '{plot_id}', '{rel_id}', '{user_id}');"
-
-        trans_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked' WHERE PLOT_ID = '{plot_id}' AND REL_ID = '{rel_id}';"
-
-        record_result = execute_query(record_query)
-        trans_result = execute_query(trans_query)
-
-        if record_result and trans_result:
-            # Booking successful
-            success_message = "Booking Successful!"
-            show_success_message(success_message)
-
-            self.display_reservations()
-            self.display_bookings()
-        else:
-            # Error message for failed execution
-            error_message = "Booking Failed, Please try again."
-            show_error_message(error_message)
-
 
 
     def display_bookings(self):
@@ -943,10 +1132,11 @@ class About_us(QMainWindow):
         self.backbtn.clicked.connect(goto_user_dash)
 
 
-app = QApplication(sys.argv)
+user = QApplication(sys.argv)
 login = Login()
 widget = QtWidgets.QStackedWidget()
 widget.addWidget(login)
 widget.setGeometry(100, 100, 1336, 768)
 widget.showFullScreen()
-sys.exit(app.exec())
+user.exec()
+

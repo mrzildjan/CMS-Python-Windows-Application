@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QWidget, QComboBox, \
-    QHBoxLayout
+    QHBoxLayout, QPushButton
 from PyQt5.QtGui import QIcon
 import psycopg2
 import re
@@ -13,9 +13,6 @@ from datetime import date, datetime
 
 current_date_time = datetime.now()
 
-# Define the global variable
-logged_in_username = None
-logged_in_password = None
 
 def execute_query_fetch(query):
     conn = psycopg2.connect(host='localhost', user='postgres', password='johnjohnkaye14', dbname='cms')
@@ -71,18 +68,26 @@ def execute_query(query):
         conn.close()
 
 
-def get_current_user_id():
-    username = logged_in_username
-    password = logged_in_password
+admin_id = None
+
+
+def get_admin_id(username, password):
+    global admin_id
     query = f"SELECT user_id FROM USERS WHERE user_username = '{username}' AND  user_password = '{password}'"
 
     result = execute_query_fetch(query)
 
     if result:
-        user_id = result[0][0]
-        return user_id
+
+        admin_id = result[0][0]
+        return admin_id
+
     else:
         return None
+
+
+
+
 
 
 def retrieve_latest_ids():
@@ -171,151 +176,168 @@ def show_message_box(message):
     msg_box.exec_()
 
 
-class Login(QMainWindow):
-    def __init__(self):
-        super(Login, self).__init__()
-        loadUi("gui/login.ui", self)
-        self.registerbtn.clicked.connect(self.goto_registration_page)
-        self.loginbtn.clicked.connect(self.login)
+# class Login(QMainWindow):
+#     def __init__(self):
+#         super(Login, self).__init__()
+#         loadUi("gui/login.ui", self)
+#         self.registerbtn.clicked.connect(self.goto_registration_page)
+#         self.loginbtn.clicked.connect(self.login)
+#
+#     def goto_registration_page(self):
+#         register = Register()
+#         show_page(register)
+#
+#     def goto_dashboard(self):
+#         dashboard = AdminDash()
+#         show_page(dashboard)
+#
+#     def login(self):
+#         # Access the global variables
+#         global logged_in_username
+#         global logged_in_password
+#
+#         username = self.inputusername.text()
+#         password = self.inputpass.text()
+#
+#         try:
+#             # Check for null values in input fields
+#             if any(value == "" for value in [username, password]):
+#                 # Display error message for null values
+#                 error_message = "Please fill in all fields."
+#                 show_error_message(error_message)
+#                 return
+#
+#             # Query to check if username and password exist and user_is_admin and is_account_admin are True
+#             query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}' AND USER_IS_ADMIN = 't'"
+#
+#             # Fetch the results
+#             results = execute_query_fetch(query)
+#
+#             # Check if a matching row is found
+#             if results:
+#                 # Store the values in global variables
+#                 logged_in_username = username
+#                 logged_in_password = password
+#
+#                 # Successful login, redirect to dashboard
+#                 self.goto_dashboard()
+#                 # Call the function
+#                 call_delete_pending_records()
+#
+#             else:
+#                 # If no matching row found, then either the user credentials are invalid or the account is not admin
+#                 # Check if the issue is with admin access
+#                 query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
+#                 results = execute_query_fetch(query)
+#                 if results:
+#                     error_message = "You are not authorized to access the admin dashboard."
+#                 else:
+#                     # Invalid login, show error message
+#                     error_message = "Invalid username or password. Please try again."
+#
+#                 show_error_message(error_message)
+#
+#         except Exception as e:
+#             # Handle any exceptions during database operations
+#             error_message = f"An error occurred: {str(e)}"
+#             show_error_message(error_message)
 
-    def goto_registration_page(self):
-        register = Register()
-        show_page(register)
 
-    def goto_dashboard(self):
-        dashboard = AdminDash()
-        show_page(dashboard)
-
-    def login(self):
-        # Access the global variables
-        global logged_in_username
-        global logged_in_password
-
-        username = self.inputusername.text()
-        password = self.inputpass.text()
-
-        try:
-            # Check for null values in input fields
-            if any(value == "" for value in [username, password]):
-                # Display error message for null values
-                error_message = "Please fill in all fields."
-                show_error_message(error_message)
-                return
-
-            # Query to check if username and password exist and user_is_admin and is_account_admin are True
-            query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}' AND USER_IS_ADMIN = 't'"
-
-            # Fetch the results
-            results = execute_query_fetch(query)
-
-            # Check if a matching row is found
-            if results:
-                # Store the values in global variables
-                logged_in_username = username
-                logged_in_password = password
-
-                # Successful login, redirect to dashboard
-                self.goto_dashboard()
-                # Call the function
-                call_delete_pending_records()
-
-            else:
-                # If no matching row found, then either the user credentials are invalid or the account is not admin
-                # Check if the issue is with admin access
-                query = f"SELECT * FROM USERS WHERE USER_USERNAME = '{username}' AND USER_PASSWORD = '{password}'"
-                results = execute_query_fetch(query)
-                if results:
-                    error_message = "You are not authorized to access the admin dashboard."
-                else:
-                    # Invalid login, show error message
-                    error_message = "Invalid username or password. Please try again."
-
-                show_error_message(error_message)
-
-        except Exception as e:
-            # Handle any exceptions during database operations
-            error_message = f"An error occurred: {str(e)}"
-            show_error_message(error_message)
-
-
-class Register(QMainWindow):
-    def __init__(self):
-        super(Register, self).__init__()
-        loadUi("gui/registration.ui", self)
-        self.registerbtn.clicked.connect(self.register_now)
-        self.backbtn.clicked.connect(self.goto_login_page)
-        self.message_box = None
-
-    def goto_login_page(self):
-        login = Login()
-        show_page(login)
-
-    def register_now(self):
-        first_name = self.txtfname.text()
-        last_name = self.txtlname.text()
-        mid_name = self.txtmid.text()
-        number = self.txtnumber.text()
-        address = self.txtaddress.text().lower()
-        username = self.txtusername.text()
-        password = self.txtpass.text()
-        confirmpass = self.txtconfirm.text()
-
-        try:
-            # Check for null values in input fields
-            if any(value == "" for value in [first_name, last_name, number, address, username, password, confirmpass]):
-                # Display error message for null values
-                error_message = "Please fill in all fields."
-                show_error_message(error_message)
-                return
-
-            if not (first_name.replace(" ", "").isalpha() and last_name.isalpha() and (
-                    mid_name == "" or mid_name.isalpha())):
-                # Display error message for non-letter values
-                error_message = "Name fields should only contain letters."
-                show_error_message(error_message)
-                return
-
-            # Validate number field
-            if not number.isdigit():
-                # Display error message for non-digit number
-                error_message = "Mobile Number should only contain digits."
-                show_error_message(error_message)
-                return
-
-            # Validate email address
-            email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-            if not re.match(email_regex, address):
-                error_message = "Invalid email address. Please enter a valid email."
-                show_error_message(error_message)
-                return
-
-            if password == confirmpass:
-                # Insert the data into the USERS table
-                insert_query = f"INSERT INTO USERS (USER_FNAME, USER_MNAME, USER_LNAME, USER_NUMBER, USER_EMAIL, " \
-                               f"USER_USERNAME, USER_PASSWORD, USER_IS_ADMIN, USER_CREATED_AT, USER_UPDATED_AT) " \
-                               f"VALUES ('{first_name}', '{mid_name}', '{last_name}', '{number}', '{address}', " \
-                               f"'{username}', '{password}', 't', '{current_date_time}', '{current_date_time}')"
-
-                # Execute the query and check if it was successful
-                if execute_query(insert_query):
-                    # Registration successful message
-                    success_message = "Registration Successful!"
-                    show_success_message(success_message)
-
-                    self.goto_login_page()
-                else:
-                    # Error message for failed execution
-                    error_message = "Registration failed. Please try again."
-                    show_error_message(error_message)
-
-            else:
-                # Passwords don't match, show error message
-                error_message = "Passwords do not match. Please try again."
-                show_error_message(error_message)
-
-        except (Exception, psycopg2.Error) as error:
-            # Error message in case of failure
-            QtWidgets.QMessageBox.critical(self, "Error", f"Registration Failed!\n\nError Message: {str(error)}")
+# class Register(QMainWindow):
+#     def __init__(self):
+#         super(Register, self).__init__()
+#         loadUi("gui/registration.ui", self)
+#         self.registerbtn.clicked.connect(self.register_now)
+#         self.backbtn.clicked.connect(self.goto_login_page)
+#         self.message_box = None
+#
+#     def goto_login_page(self):
+#         login = Login()
+#         show_page(login)
+#
+#     def register_now(self):
+#         first_name = self.txtfname.text()
+#         last_name = self.txtlname.text()
+#         mid_name = self.txtmid.text()
+#         number = self.txtnumber.text()
+#         address = self.txtaddress.text().lower()
+#         username = self.txtusername.text()
+#         password = self.txtpass.text()
+#         confirmpass = self.txtconfirm.text()
+#
+#         # Check for null values in input fields
+#         if any(value == "" for value in [first_name, last_name, number, address, username, password, confirmpass]):
+#             # Display error message for null values
+#             error_message = "Please fill in all fields."
+#             show_error_message(error_message)
+#             return
+#
+#         if not (first_name.replace(" ", "").isalpha() and last_name.isalpha() and (
+#                 mid_name == "" or mid_name.isalpha())):
+#             # Display error message for non-letter values
+#             error_message = "Name fields should only contain letters."
+#             show_error_message(error_message)
+#             return
+#
+#         # Validate number field
+#         if number.startswith('+63'):
+#             # Convert "+639760961509" to "09760961509"
+#             number = '0' + number[3:]  # Replace "+63" with "0"
+#         elif number.startswith('0'):
+#             # Remove any spaces or special characters in the phone number
+#             number = re.sub(r'\D', '', number)
+#         else:
+#             # Display error message for invalid number format
+#             error_message = "Invalid phone number format. Please enter a valid Philippine number."
+#             show_error_message(error_message)
+#             return
+#
+#         if not number.isdigit() or len(number) != 11 or not number.startswith('09'):
+#             # Display error message for invalid number
+#             error_message = "Phone number should start with '09' and have a total of 11 digits."
+#             show_error_message(error_message)
+#             return
+#
+#         # Validate email address
+#         email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+#         if not re.match(email_regex, address):
+#             error_message = "Invalid email address. Please enter a valid email."
+#             show_error_message(error_message)
+#             return
+#
+#         # Check if username already exists
+#         select_query = f"SELECT COUNT(*) FROM USERS WHERE USER_USERNAME = '{username}'"
+#         result = execute_query_fetch(select_query)
+#
+#         if result is not None and result[0][0] > 0:
+#             # Display error message for existing username
+#             error_message = "Username already exists. Please choose a different username."
+#             show_error_message(error_message)
+#             return
+#
+#         if password == confirmpass:
+#             # Insert the data into the USERS table
+#             insert_query = f"INSERT INTO USERS (USER_FNAME, USER_MNAME, USER_LNAME, USER_NUMBER, USER_EMAIL, " \
+#                            f"USER_USERNAME, USER_PASSWORD, USER_IS_ADMIN ,USER_CREATED_AT, USER_UPDATED_AT) " \
+#                            f"VALUES ('{first_name}', '{mid_name}', '{last_name}', '{number}', '{address}', " \
+#                            f"'{username}', '{password}', 't', '{current_date_time}', '{current_date_time}')"
+#
+#             # Execute the query and check if it was successful
+#             if execute_query(insert_query):
+#                 # Registration successful message
+#                 success_message = "Registration Successful!"
+#                 show_success_message(success_message)
+#
+#                 self.goto_login_page()
+#             else:
+#                 # Error message for failed execution
+#                 error_message = "Registration failed. Please try again."
+#                 show_error_message(error_message)
+#
+#         else:
+#             # Passwords don't match, show error message
+#             error_message = "Passwords do not match. Please try again."
+#             show_error_message(error_message)
 
 
 class AdminDash(QMainWindow):
@@ -328,6 +350,8 @@ class AdminDash(QMainWindow):
         self.booking_man_btn.clicked.connect(self.goto_booking_management)
         self.logoutbtn.clicked.connect(self.goto_login_page)
         self.transactionbtn.clicked.connect(self.goto_view_transaction)
+        print("successfully reached admin id ")
+        print(admin_id)
 
     def goto_record_management(self):
         record_management = Record_management()
@@ -350,8 +374,10 @@ class AdminDash(QMainWindow):
         show_page(view_transaction)
 
     def goto_login_page(self):
-        login = Login()
-        show_page(login)
+        from user import Login
+        logins = Login()
+        show_page(logins)
+        widget.hide()
 
 
 def get_rel_id(plot_id):
@@ -382,6 +408,13 @@ class Record_management(QMainWindow):
         self.search.currentTextChanged.connect(self.search_changed)
         self.searchbtn.clicked.connect(self.perform_search)
         self.exumed.clicked.connect(self.view_exhumed)
+        self.exhumationlbl.setVisible(False)
+        self.notoday.setVisible(False)
+        import datetime
+        current_date = datetime.date.today()
+        self.display_exhumation(current_date)
+        print(current_date)
+
 
     def goto_add_record_page(self):
         add_record = Add_record()
@@ -419,10 +452,72 @@ class Record_management(QMainWindow):
                     item = QTableWidgetItem(str(col_data))
                     self.record_table.setItem(row_idx, col_idx, item)
 
+    def display_exhumation(self, date_now):
+
+        query = f"SELECT REC.PLOT_ID,  R.REL_FNAME, R.REL_MNAME, R.REL_LNAME, R.REL_DOB, R.REL_DATE_DEATH, R.REL_DATE_INTERMENT, R.REL_DATE_EXHUMATION, REC.REC_STATUS\
+                       FROM RECORD REC INNER JOIN RELATIVE R USING(REL_ID) WHERE R.REL_DATE_EXHUMATION = '{date_now}' ;"
+
+        # Execute the query and fetch the results
+        results = execute_query_fetch(query)
+
+        if not results:
+            self.notoday.setVisible(True)
+        else:
+            self.exhumationlbl.setVisible(True)
+
+            self.record_table.clearContents()
+
+            # Set the table row count to the number of fetched results
+            self.record_table.setRowCount(len(results))
+
+            # Create a dictionary that maps the values from the TRANS_STATUS column to the display text in the dropdown
+            status_mapping = {
+                'exhumed': 'Exhumed',
+                'buried': 'Buried',
+
+            }
+
+            # Populate the table with the fetched results
+            for row_idx, row_data in enumerate(results):
+                for col_idx, col_data in enumerate(row_data):
+                    if col_idx == 8:  # "Plot Status" column
+                        # Create a QComboBox for the "Plot Status" column
+                        status_combobox = QComboBox()
+                        status_combobox.addItems(status_mapping.values())
+
+                        # Set the initial value of the QComboBox based on the fetched data
+                        status = col_data.lower()
+                        if status in status_mapping:
+                            index = status_combobox.findText(status_mapping[status])
+                            if index >= 0:
+                                status_combobox.setCurrentIndex(index)
+
+                        # Connect the currentIndexChanged signal to update the plot status
+                        status_combobox.currentIndexChanged.connect(
+                            lambda index, row=row_data, status_combobox=status_combobox: self.update_plot_status(row[0],
+                                                                                                                 status_combobox.currentText())
+                        )
+
+                        # Set the QComboBox as the item for the current cell
+                        self.record_table.setCellWidget(row_idx, col_idx, status_combobox)
+                    else:
+                        item = QTableWidgetItem(str(col_data))
+                        self.record_table.setItem(row_idx, col_idx, item)
+
+                        # Create a combobox widget for actions
+                actions_combo = QComboBox()
+                actions_combo.addItem("Select")
+                actions_combo.addItem("1 year")
+                actions_combo.addItem("3 years")
+                actions_combo.addItem("5 years")
+                actions_combo.currentIndexChanged.connect(self.handle_action)
+
+                # Set the combobox as the cell widget for the action column
+                self.record_table.setCellWidget(row_idx, len(row_data), actions_combo)
+
 
     def update_plot_status(self, plot_id, status):
         rel_id = get_rel_id(plot_id)
-        user_id = get_current_user_id()
         if status == 'Buried':
             rec_query = f"UPDATE RECORD SET REC_STATUS = '{status}' WHERE PLOT_ID = '{plot_id}';"
             stat = 'Occupied'
@@ -431,9 +526,9 @@ class Record_management(QMainWindow):
 
         else:
             print(rel_id)
-            print(user_id)
+            print(admin_id)
             rec_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) \
-                         VALUES (CURRENT_DATE, 0, 'Exhumed', null, {rel_id}, {user_id});"
+                         VALUES (CURRENT_DATE, 0, 'Exhumed', null, {rel_id}, {admin_id});"
 
             plot_query = f"DELETE FROM PLOT WHERE PLOT_ID = '{plot_id}';"
             buried_result = execute_query(rec_query), execute_query(plot_query)
@@ -444,6 +539,8 @@ class Record_management(QMainWindow):
             show_error_message("Failed to update plot status.")
 
     def perform_search(self):
+        self.exhumationlbl.setVisible(False)
+        self.notoday.setVisible(False)
         txtfname = self.txtfname.text()
         txtlname = self.txtlname.text()
         dob = self.dob.text()
@@ -694,67 +791,110 @@ class Add_record(QMainWindow):
         dec_dob = self.dec_dob.date().toString("yyyy-MM-dd")
         dec_dod = self.dec_dod.date().toString("yyyy-MM-dd")
         dec_doi = self.dec_doi.date().toString("yyyy-MM-dd")
-        user_id = get_current_user_id()
         plot_yard = self.plot_yard.currentText()
         plot_row = self.plot_row.currentText()
         plot_col = self.plot_col.currentText()
         plot_status = self.plot_status.text()
 
         if plot_status == "":
-            error_message = "Please Choose Plot Location"
+            error_message = "Please check and choose a plot location."
             show_error_message(error_message)
             return
 
-        if any(value == "" for value in
-               [dec_fname, dec_lname, dec_dob, dec_dod, dec_doi, plot_yard, plot_row, plot_col, plot_status]):
+        if any(value == "" for value in [plot_yard, plot_row, plot_col, plot_status]):
             # Display error message for null values
             error_message = "Please fill in all fields."
             show_error_message(error_message)
             return
 
-        if not (dec_fname.replace(" ", "").isalpha() and dec_lname.isalpha() and (dec_mname == "" or dec_mname.isalpha())):
-            # Display error message for non-letter values
-            error_message = "Name fields should only contain letters."
+        if plot_status in ['Reserved', 'Booked']:
+            error_message = "This plot is already reserved or booked."
             show_error_message(error_message)
-            return
-
-        # Check if the plot already exists
-        if check_plot_existence(plot_yard, plot_row, plot_col):
-            error_message = "Chosen Plot is Unavailable, Please select a different plot."
-            show_error_message(error_message)
-        else:
-            current_date_time = datetime.now()
+        elif not check_plot_existence(plot_yard, plot_row, plot_col):
+            print("NO PLOT EXISTENCE")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                              VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
-            plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                          VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
-
-            # Execute the queries
+                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
             relative_result = execute_query(relative_query)
-            plot_result = execute_query(plot_query)
+            # Insert the new plot
+            insert_plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
+                                VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
+            insert_plot_result = execute_query(insert_plot_query)
 
-            latest_plot_id, latest_rel_id = retrieve_latest_ids()
-            print("rel  ", latest_rel_id)
-            print("plot  ",latest_plot_id)
             record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
-                           f"VALUES ('{current_date_time}', 500.00, 'Buried', '{latest_plot_id}', '{latest_rel_id}', '{user_id}');"
+                           f"VALUES ('{current_date_time}', 500.00, 'Buried', (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'), (SELECT MAX(rel_id) FROM RELATIVE), '{admin_id}');"
 
-            transaction_query = f"INSERT INTO TRANSACTION ( trans_type, trans_status, trans_date, user_id, rel_id, plot_id)" \
-                                f"VALUES ( 'Booked'  , 'Fully Paid' , '{current_date_time}', '{user_id}', '{latest_rel_id}', '{latest_plot_id}');"
+            insert_record = execute_query(record_query)
 
-            record_result = execute_query(record_query)
-            transaction_result = execute_query(transaction_query)
-
-            # Check if the queries were successful
-            if relative_result and plot_result and record_result and transaction_result:
-                # Booking successful
-                success_message = "Added Successful!"
+            if insert_plot_result and relative_result and insert_record:
+                # Reservation successful
+                success_message = "Record Added successful!"
                 show_success_message(success_message)
 
                 self.goto_record_management()
             else:
                 # Error message for failed execution
-                error_message = "Adding Failed, Please try again."
+                error_message = "Booked failed. Please try again."
+                show_error_message(error_message)
+
+        elif plot_status == "Available":
+            print("EXISTING TRANSACTION")
+            relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
+            update_relative_result = execute_query(relative_query)
+
+            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
+                           f"VALUES ('{current_date_time}', 500.00, 'Buried', (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'), (SELECT MAX(rel_id) FROM RELATIVE), '{admin_id}');"
+
+            insert_record = execute_query(record_query)
+
+            if update_relative_result and insert_record:
+                # Update the plot status
+                update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Occupied' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
+                update_plot_result = execute_query(update_plot_query)
+
+                if update_plot_result:
+                    # Reservation successful
+                    success_message = "Booked successful!"
+                    show_success_message(success_message)
+
+                    self.goto_record_management()
+                else:
+                    # Error message for failed execution
+                    error_message = "Booked failed. Please try again."
+                    show_error_message(error_message)
+            else:
+                # Error message for failed execution
+                error_message = "Booked failed. Please try again."
+                show_error_message(error_message)
+        else:
+            print("NOT EXISTING TRANSACTION")
+            relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
+                                                    VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
+            update_relative_result = execute_query(relative_query)
+
+            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
+                           f"VALUES ('{current_date_time}', 500.00, 'Buried', (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'), (SELECT MAX(rel_id) FROM RELATIVE), '{admin_id}');"
+
+            insert_record = execute_query(record_query)
+
+            if update_relative_result and insert_record:
+                # Update the plot status
+                update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Occupied' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
+                update_plot_result = execute_query(update_plot_query)
+
+                if update_plot_result:
+                    # Reservation successful
+                    success_message = "Booked successful!"
+                    show_success_message(success_message)
+
+                    self.goto_record_management()
+                else:
+                    # Error message for failed execution
+                    error_message = "Booked failed. Please try again."
+                    show_error_message(error_message)
+            else:
+                # Error message for failed execution
+                error_message = "Booked failed. Please try again."
                 show_error_message(error_message)
 
 
@@ -792,9 +932,8 @@ class Plot_management(QMainWindow):
 
             # Create a dictionary that maps the values from the TRANS_STATUS column to the display text in the dropdown
             status_mapping = {
-                'reserved': 'Reserved',
-                'booked': 'Booked',
-                'cancelled': 'Cancelled'
+                'occupied': 'Occupied',
+                'available': 'Available'
             }
 
             # Populate the table with the fetched results
@@ -814,7 +953,8 @@ class Plot_management(QMainWindow):
 
                         # Connect the currentIndexChanged signal to update the plot status
                         status_combobox.currentIndexChanged.connect(
-                            lambda index, row=row_data, status_combobox=status_combobox: self.update_plot_status(row[0], status_combobox.currentText())
+                            lambda index, row=row_data, status_combobox=status_combobox: self.update_plot_status(row[0],
+                                                                                                                 status_combobox.currentText())
                         )
 
                         # Set the QComboBox as the item for the current cell
@@ -825,19 +965,11 @@ class Plot_management(QMainWindow):
                         self.plot_table.setItem(row_idx, col_idx, item)
 
     def update_plot_status(self, plot_id, status):
-        if status == 'Reserved':
-            show_error_message("Cannot change plot status from 'Reserved'.")
-            return
-
-        if status == 'Cancelled':
-            status = 'Available'
-
         query = f"UPDATE PLOT SET PLOT_STATUS = '{status}' WHERE PLOT_ID = '{plot_id}';"
         if execute_query(query):
             show_success_message("Plot status updated successfully.")
         else:
             show_error_message("Failed to update plot status.")
-
 
 
 class Reservation_management(QMainWindow):
@@ -958,15 +1090,6 @@ class Reservation_management(QMainWindow):
             # Update the plot status to 'Available'
             query = f"UPDATE PLOT SET PLOT_STATUS = 'Available' WHERE PLOT_ID = (SELECT PLOT_ID FROM TRANSACTION WHERE TRANS_ID = '{trans_id}');"
             execute_query(query)
-        elif trans_type == 'Reserved':
-            # Check if the user is an admin
-            query = f"SELECT USER_TYPE FROM USERS WHERE USER_ID = (SELECT USER_ID FROM TRANSACTION WHERE TRANS_ID = '{trans_id}');"
-            result = execute_query_fetch(query)
-
-            if result and result[0] == 'admin':
-                error_message = "Cannot change the transaction type to 'Reserved' for an admin user."
-                show_error_message(error_message)
-                return
 
         query = f"UPDATE TRANSACTION SET TRANS_TYPE = '{trans_type}' WHERE TRANS_ID = '{trans_id}';"
         if execute_query(query):
@@ -1011,7 +1134,6 @@ class Reservation_page(QMainWindow):
         plot_row = self.plot_row.currentText()
         plot_col = self.plot_col.currentText()
         plot_status = self.plot_status.text()
-        user_id = get_current_user_id()
 
         if plot_status == "":
             error_message = "Please check and choose a plot location."
@@ -1030,17 +1152,17 @@ class Reservation_page(QMainWindow):
         elif not check_plot_existence(plot_yard, plot_row, plot_col):
             # Insert into relative
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                                                             VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
             relative_result = execute_query(relative_query)
             # Insert the new plot
             insert_plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
-                                VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
+                                        VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
             insert_plot_result = execute_query(insert_plot_query)
 
             if insert_plot_result and relative_result:
                 # Insert a new reservation
-                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, PLOT_ID) " \
-                                           f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', " \
+                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
+                                           f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{admin_id}', (SELECT MAX(rel_id) FROM RELATIVE), " \
                                            f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
                 insert_transaction_result = execute_query(insert_transaction_query)
 
@@ -1066,12 +1188,12 @@ class Reservation_page(QMainWindow):
 
             if existing_transaction_result:
                 # Update relative
-                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
+                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{admin_id}'"
                 update_relative_result = execute_query(update_relative_query)
 
                 # Update the existing transaction
                 existing_transaction_id = existing_transaction_result[0][0]
-                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Reserved', TRANS_STATUS = 'Pending', TRANS_DATE = '{current_date_time}', USER_ID = '{user_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
+                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Reserved', TRANS_STATUS = 'Pending', TRANS_DATE = '{current_date_time}', REL_ID = (SELECT MAX(REL_ID) FROM RELATIVE), USER_ID = '{admin_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
                 update_transaction_result = execute_query(update_transaction_query)
 
                 if update_transaction_result and update_relative_result:
@@ -1095,12 +1217,12 @@ class Reservation_page(QMainWindow):
                     show_error_message(error_message)
             else:
                 # Update relative
-                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{user_id}'"
+                update_relative_query = f"UPDATE RELATIVE SET rel_fname = '{dec_fname}', rel_mname = '{dec_mname}', rel_lname = '{dec_lname}', rel_dob = '{dec_dob}', rel_date_death = '{dec_dod}', rel_date_interment = '{dec_doi}' WHERE user_id = '{admin_id}'"
                 update_relative_result = execute_query(update_relative_query)
 
                 # Insert a new reservation
-                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, PLOT_ID) " \
-                                           f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{user_id}', " \
+                insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
+                                           f"VALUES ('Reserved', 'Pending', '{current_date_time}', '{admin_id}', (SELECT MAX(rel_id) FROM RELATIVE), " \
                                            f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
                 insert_transaction_result = execute_query(insert_transaction_query)
 
@@ -1153,7 +1275,7 @@ class Booking_management(QMainWindow):
 
     def display_booking(self, plot_yard):
         if plot_yard == "Cancelled":
-            query = f"SELECT T.TRANS_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_ID, R.USER_ID, P.PLOT_STATUS, P.PLOT_DATE FROM TRANSACTION T INNER JOIN PLOT P ON T.PLOT_ID = P.PLOT_ID \
+            query = f"SELECT T.TRANS_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_ID, R.USER_ID, T.TRANS_TYPE, P.PLOT_DATE FROM TRANSACTION T INNER JOIN PLOT P ON T.PLOT_ID = P.PLOT_ID \
                                     INNER JOIN RELATIVE R ON T.REL_ID = R.REL_ID WHERE T.TRANS_TYPE = 'Cancelled' AND TRANS_STATUS = 'Paid' ORDER BY T.TRANS_ID DESC;"
 
             # Execute the query and fetch the results
@@ -1176,7 +1298,7 @@ class Booking_management(QMainWindow):
                         item = QTableWidgetItem(str(col_data))
                         self.bookingtable.setItem(row_idx, col_idx, item)
         else:
-            query = f"SELECT T.TRANS_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_ID, R.USER_ID, P.PLOT_STATUS, P.PLOT_DATE, T.TRANS_TYPE FROM TRANSACTION T INNER JOIN PLOT P ON T.PLOT_ID = P.PLOT_ID \
+            query = f"SELECT T.TRANS_ID, P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, R.REL_ID, R.USER_ID, T.TRANS_TYPE, P.PLOT_DATE, T.TRANS_TYPE FROM TRANSACTION T INNER JOIN PLOT P ON T.PLOT_ID = P.PLOT_ID \
                         INNER JOIN RELATIVE R ON T.REL_ID = R.REL_ID WHERE P.PLOT_YARD = '{plot_yard}' AND T.TRANS_TYPE = 'Booked' ORDER BY T.TRANS_ID DESC;"
 
 
@@ -1246,24 +1368,23 @@ class Booking_management(QMainWindow):
             # Update the plot status to 'Available'
             query = f"UPDATE PLOT SET PLOT_STATUS = 'Available' WHERE PLOT_ID = (SELECT PLOT_ID FROM TRANSACTION WHERE TRANS_ID = '{trans_id}');"
             execute_query(query)
-        elif trans_type == 'Booked':
-            # Check if the user is an admin
-            query = f"SELECT USER_TYPE FROM USERS WHERE USER_ID = (SELECT USER_ID FROM TRANSACTION WHERE TRANS_ID = '{trans_id}');"
-            result = execute_query_fetch(query)
 
-            if result and result[0] == 'admin':
-                error_message = "Cannot change the transaction type to 'Booked' for an admin user."
-                show_error_message(error_message)
-                return
+            # Get the relative id for this transaction
+            relative_id_query = f"SELECT REL_ID FROM TRANSACTION WHERE TRANS_ID = '{trans_id}';"
+            relative_id_result = execute_query_fetch(relative_id_query)
+            if relative_id_result:
+                # Unpack the relative_id from the result
+                relative_id, = relative_id_result[0]
+                # Delete the record from the RECORD table
+                delete_record_query = f"DELETE FROM RECORD WHERE REL_ID = '{relative_id}';"
+                execute_query(delete_record_query)
 
         query = f"UPDATE TRANSACTION SET TRANS_TYPE = '{trans_type}' WHERE TRANS_ID = '{trans_id}';"
         if execute_query(query):
             show_success_message("Status updated successfully.")
-
             self.goto_display_booking()
         else:
             show_error_message("Failed to update transaction type.")
-
 
 
 class Booking_page(QMainWindow):
@@ -1300,7 +1421,6 @@ class Booking_page(QMainWindow):
         plot_row = self.plot_row.currentText()
         plot_col = self.plot_col.currentText()
         plot_status = self.plot_status.text()
-        user_id = get_current_user_id()
 
         if plot_status == "":
             error_message = "Please check and choose a plot location."
@@ -1319,17 +1439,22 @@ class Booking_page(QMainWindow):
         elif not check_plot_existence(plot_yard, plot_row, plot_col):
             print("NO PLOT EXISTENCE")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
             relative_result = execute_query(relative_query)
             # Insert the new plot
             insert_plot_query = f"INSERT INTO PLOT (plot_col, plot_row, plot_yard, plot_status, plot_date) \
                                 VALUES ('{plot_col}', '{plot_row}', '{plot_yard}', 'Occupied', '{current_date_time}' )"
             insert_plot_result = execute_query(insert_plot_query)
 
-            if insert_plot_result and relative_result:
+            record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
+                           f"VALUES ('{current_date_time}', 500.00, 'Buried', (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'), (SELECT MAX(rel_id) FROM RELATIVE), '{admin_id}');"
+
+            insert_record = execute_query(record_query)
+
+            if insert_plot_result and relative_result and insert_record:
                 # Insert a new reservation
                 insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
-                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', (SELECT MAX(rel_id) FROM RELATIVE), " \
+                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{admin_id}', (SELECT MAX(rel_id) FROM RELATIVE), " \
                                            f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
                 insert_transaction_result = execute_query(insert_transaction_query)
 
@@ -1356,12 +1481,12 @@ class Booking_page(QMainWindow):
             if existing_transaction_result:
                 print("EXISTING TRANSACTION")
                 relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                                                         VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                                                         VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
                 update_relative_result = execute_query(relative_query)
 
                 # Update the existing transaction
                 existing_transaction_id = existing_transaction_result[0][0]
-                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked', TRANS_STATUS = 'Paid', TRANS_DATE = '{current_date_time}', REL_ID = (SELECT MAX(REL_ID) FROM RELATIVE) , USER_ID = '{user_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
+                update_transaction_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked', TRANS_STATUS = 'Paid', TRANS_DATE = '{current_date_time}', REL_ID = (SELECT MAX(REL_ID) FROM RELATIVE) , USER_ID = '{admin_id}' WHERE TRANS_ID = '{existing_transaction_id}'"
                 update_transaction_result = execute_query(update_transaction_query)
 
                 if update_transaction_result and update_relative_result:
@@ -1386,16 +1511,21 @@ class Booking_page(QMainWindow):
             else:
                 print("NOT EXISTING TRANSACTION")
                 relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
-                                                                        VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
+                                                                        VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
                 update_relative_result = execute_query(relative_query)
 
                 # Insert a new reservation
                 insert_transaction_query = f"INSERT INTO TRANSACTION (TRANS_TYPE, TRANS_STATUS, TRANS_DATE, USER_ID, REL_ID, PLOT_ID) " \
-                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{user_id}', (SELECT MAX(rel_id) FROM RELATIVE)," \
+                                           f"VALUES ('Booked', 'Paid', '{current_date_time}', '{admin_id}', (SELECT MAX(rel_id) FROM RELATIVE)," \
                                            f"(SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'))"
                 insert_transaction_result = execute_query(insert_transaction_query)
 
-                if insert_transaction_result and update_relative_result:
+                record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
+                               f"VALUES ('{current_date_time}', 500.00, 'Buried', (SELECT PLOT_ID FROM PLOT WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'), (SELECT MAX(rel_id) FROM RELATIVE), '{admin_id}');"
+
+                insert_record = execute_query(record_query)
+
+                if insert_transaction_result and update_relative_result and insert_record:
                     # Update the plot status
                     update_plot_query = f"UPDATE PLOT SET PLOT_STATUS = 'Occupied' WHERE PLOT_YARD = '{plot_yard}' AND PLOT_ROW = '{plot_row}' AND PLOT_COL = '{plot_col}'"
                     update_plot_result = execute_query(update_plot_query)
@@ -1425,14 +1555,14 @@ class View_transaction(QMainWindow):
         super(View_transaction, self).__init__()
         loadUi("gui/transaction.ui", self)
         self.backbtn.clicked.connect(goto_admin_dash)
-        global user_id
-        user_id = get_current_user_id()
         self.display_reservations()
         self.display_bookings()
+        self.reservation.setVisible(False)
+        self.pending.setVisible(True)
 
     def display_reservations(self):
-        query = f"SELECT T.TRANS_ID , P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, T.TRANS_STATUS FROM TRANSACTION T INNER JOIN PLOT P USING (PLOT_ID) \
-                WHERE T.USER_ID = '{user_id}' AND T.TRANS_TYPE = 'Reserved' ORDER BY T.TRANS_ID,  P.PLOT_DATE DESC;"
+        query = f"SELECT U.USER_ID , P.PLOT_ID, R.REL_ID, R.REL_FNAME, R.REL_LNAME,  T.TRANS_STATUS FROM PLOT P INNER JOIN TRANSACTION T USING (PLOT_ID) \
+                       INNER JOIN RELATIVE R USING(REL_ID) INNER JOIN USERS U ON U.USER_ID = T.USER_ID WHERE T.TRANS_TYPE = 'Reserved' ORDER BY T.TRANS_ID,  P.PLOT_DATE DESC;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
@@ -1443,18 +1573,56 @@ class View_transaction(QMainWindow):
         # Set the table row count to the number of fetched results
         self.reservation_table.setRowCount(len(results))
 
-        # Populate the table with the fetched results
         for row_idx, row_data in enumerate(results):
             for col_idx, col_data in enumerate(row_data):
                 item = QTableWidgetItem(str(col_data))
                 self.reservation_table.setItem(row_idx, col_idx, item)
 
+            # Create and set the button in the last column of each row
+            button = QPushButton("Book")
+            button.setProperty("plot_id", str(row_data[1]))  # Set the PLOT_ID as a custom property
+            button.setProperty("rel_id", str(row_data[2]))  # Set the REL_ID as a custom property
+            button.setStyleSheet("background-color: green; color: white;")
+
+            button.clicked.connect(self.book_reservation)
+            self.reservation_table.setCellWidget(row_idx, len(row_data), button)
+
+    def book_reservation(self):
+        # Get the sender button from the signal
+        button = self.sender()
+
+        # Get the row index of the clicked button
+        row_idx = self.reservation_table.indexAt(button.pos()).row()
+
+        # Retrieve the PLOT_ID and REL_ID from the custom properties of the button
+        plot_id = button.property("plot_id")
+        rel_id = button.property("rel_id")
+
+        record_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) " \
+                       f"VALUES ('{current_date_time}', 500.00, 'Buried', '{plot_id}', '{rel_id}', '{admin_id}');"
+
+        trans_query = f"UPDATE TRANSACTION SET TRANS_TYPE = 'Booked' WHERE PLOT_ID = '{plot_id}' AND REL_ID = '{rel_id}';"
+
+        record_result = execute_query(record_query)
+        trans_result = execute_query(trans_query)
+
+        if record_result and trans_result:
+            # Booking successful
+            success_message = "Booking Successful!"
+            show_success_message(success_message)
+
+            self.display_reservations()
+            self.display_bookings()
+        else:
+            # Error message for failed execution
+            error_message = "Booking Failed, Please try again."
+            show_error_message(error_message)
+
+
+
     def display_bookings(self):
-        query = f"SELECT TRANS_ID, PLOT_YARD, PLOT_ROW, PLOT_COL, REL_FNAME, REL_MNAME, REL_LNAME, REL_DOB, REL_DATE_DEATH " \
-                f"FROM USERS INNER JOIN TRANSACTION USING(USER_ID)" \
-                f"INNER JOIN PLOT USING(PLOT_ID)" \
-                f"INNER JOIN RELATIVE USING(USER_ID)" \
-                f"WHERE USER_ID = '{user_id}' AND TRANS_TYPE = 'Booked' ORDER BY TRANS_ID, PLOT_DATE DESC;;"
+        query = f"SELECT T.TRANS_ID , P.PLOT_YARD, P.PLOT_ROW, P.PLOT_COL, RL.REL_FNAME, RL.REL_MNAME, RL.REL_LNAME, RL.rel_dob, RL.rel_date_death FROM PLOT P \
+                       INNER JOIN TRANSACTION T USING (PLOT_ID) INNER JOIN RELATIVE RL USING (REL_ID) WHERE T.USER_ID IN (SELECT USER_ID FROM USERS)  AND T.TRANS_TYPE = 'Booked' ORDER BY T.TRANS_ID, P.PLOT_DATE DESC;"
 
         # Execute the query and fetch the results
         results = execute_query_fetch(query)
@@ -1478,7 +1646,7 @@ def call_delete_pending_records():
             database="cms",
             user="postgres",
             password='johnjohnkaye14'
-        )
+            )
 
         # Create a cursor to interact with the database
         cursor = conn.cursor()
@@ -1499,9 +1667,10 @@ def call_delete_pending_records():
 
 
 app = QApplication(sys.argv)
-login = Login()
+dash = AdminDash()
 widget = QtWidgets.QStackedWidget()
-widget.addWidget(login)
+widget.addWidget(dash)
 widget.show()
 widget.showFullScreen()
 app.exec()
+
