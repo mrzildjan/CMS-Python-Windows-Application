@@ -42,7 +42,7 @@ it utilizes the latest **PostgreSQL 15 Relational Database Management System**.
                             
 ### Contributors
 *Cemasys Software Developer*
-- [@Mr.zildjan](https://github.com/mr.zildjan18)
+- [@Mr.zildjan](https://github.com/mrzildjan)
 - [@Johnbert Decinan](https://facebook.com/johnbert.decinan)
 
 *Cemasys Database Administrator*
