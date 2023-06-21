@@ -47,3 +47,11 @@ it utilizes the latest **PostgreSQL 15 Relational Database Management System**.
 
 *Cemasys Database Administrator*
 - [@Venice Manatad](https://web.facebook.com/profile.php?id=100082584123233)
+
+### Published
+```
+System Published June 20, 2023.
+```
+
+---
+
