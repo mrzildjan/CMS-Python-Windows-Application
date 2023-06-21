@@ -1,15 +1,10 @@
-import datetime
 import sys
-
-from PyQt5.QtCore import Qt
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QWidget, QComboBox, \
-    QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QComboBox, QPushButton
 from PyQt5.QtGui import QIcon
 import psycopg2
-import re
-from datetime import date, datetime
+from datetime import datetime
 
 current_date_time = datetime.now()
 
@@ -350,8 +345,6 @@ class AdminDash(QMainWindow):
         self.booking_man_btn.clicked.connect(self.goto_booking_management)
         self.logoutbtn.clicked.connect(self.goto_login_page)
         self.transactionbtn.clicked.connect(self.goto_view_transaction)
-        print("successfully reached admin id ")
-        print(admin_id)
 
     def goto_record_management(self):
         record_management = Record_management()
@@ -413,7 +406,6 @@ class Record_management(QMainWindow):
         import datetime
         current_date = datetime.date.today()
         self.display_exhumation(current_date)
-        print(current_date)
 
 
     def goto_add_record_page(self):
@@ -518,7 +510,6 @@ class Record_management(QMainWindow):
 
     def update_plot_status(self, plot_id, status):
         rel_id = get_rel_id(plot_id)
-        print(status)
         if status == 'Buried':
             rec_query = f"UPDATE RECORD SET REC_STATUS = '{status}' WHERE PLOT_ID = '{plot_id}';"
             stat = 'Occupied'
@@ -527,8 +518,6 @@ class Record_management(QMainWindow):
 
 
         else:
-            print(rel_id)
-            print(admin_id)
             rec_query = f"INSERT INTO RECORD (rec_lastpay_date, rec_lastpay_amount, rec_status, plot_id, rel_id, user_id) \
                          VALUES (CURRENT_DATE, 0, 'Exhumed', null, {rel_id}, {admin_id});"
 
@@ -728,7 +717,6 @@ class Record_management(QMainWindow):
         if execute_query(update_query):
             show_message_box('Exhumation Date Updated Successfully')
             self.perform_search()
-            print(plot_id)
         else:
             show_error_message('rel_date_exhumation is NULL. Update not performed.')
 
@@ -813,7 +801,6 @@ class Add_record(QMainWindow):
             error_message = "This plot is already reserved or booked."
             show_error_message(error_message)
         elif not check_plot_existence(plot_yard, plot_row, plot_col):
-            print("NO PLOT EXISTENCE")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                      VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
             relative_result = execute_query(relative_query)
@@ -839,7 +826,6 @@ class Add_record(QMainWindow):
                 show_error_message(error_message)
 
         elif plot_status == "Available":
-            print("EXISTING TRANSACTION")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                      VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
             update_relative_result = execute_query(relative_query)
@@ -869,7 +855,6 @@ class Add_record(QMainWindow):
                 error_message = "Booked failed. Please try again."
                 show_error_message(error_message)
         else:
-            print("NOT EXISTING TRANSACTION")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                     VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
             update_relative_result = execute_query(relative_query)
@@ -1004,7 +989,6 @@ class Reservation_management(QMainWindow):
 
             # Execute the query and fetch the results
             results = execute_query_fetch(query)
-            print(results)
             if not results:
                 message = 'No results found'
                 show_message_box(message)
@@ -1284,7 +1268,6 @@ class Booking_management(QMainWindow):
 
             # Execute the query and fetch the results
             results = execute_query_fetch(query)
-            print(results)
             if not results:
                 message = 'No results found'
                 show_message_box(message)
@@ -1441,7 +1424,6 @@ class Booking_page(QMainWindow):
             error_message = "This plot is already reserved or booked."
             show_error_message(error_message)
         elif not check_plot_existence(plot_yard, plot_row, plot_col):
-            print("NO PLOT EXISTENCE")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                      VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
             relative_result = execute_query(relative_query)
@@ -1483,7 +1465,6 @@ class Booking_page(QMainWindow):
             existing_transaction_result = execute_query_fetch(existing_transaction_query)
 
             if existing_transaction_result:
-                print("EXISTING TRANSACTION")
                 relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                          VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
                 update_relative_result = execute_query(relative_query)
@@ -1513,7 +1494,6 @@ class Booking_page(QMainWindow):
                     error_message = "Booked failed. Please try again."
                     show_error_message(error_message)
             else:
-                print("NOT EXISTING TRANSACTION")
                 relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                                         VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{admin_id}')"
                 update_relative_result = execute_query(relative_query)

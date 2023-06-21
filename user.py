@@ -1,4 +1,3 @@
-import datetime
 import sys
 from PyQt5.uic import loadUi
 from PyQt5 import QtWidgets
@@ -7,7 +6,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessag
 from PyQt5.QtGui import QIcon, QFont
 import psycopg2
 import re
-from datetime import date, datetime
+from datetime import datetime
 
 current_date_time = datetime.now()
 
@@ -201,7 +200,6 @@ class Login(QMainWindow):
             if results:
                 user_data = results[0][8]  # Retrieve the dictionary from the tuple
                 is_admin = user_data
-                print(is_admin)
 
                 # Store the values in global variables
                 logged_in_username = username
@@ -212,20 +210,9 @@ class Login(QMainWindow):
                     admin = AdminDash()
                     show_page(admin)
                     widget.close()
-
                     import admin
-
                     admin_id = admin.get_admin_id(logged_in_username, logged_in_password)
-                    if admin_id is not None:
-                        # Do something with the user_id
-                        print("admin_id ID:", admin_id)
-                    else:
-                        # Handle the case when the user is not found
-                        print("admin not found")
-
                 else:
-                    print("user id")
-                    print(get_current_user_id())
                     self.goto_dashboard()
             else:
                 # Invalid login, show error message
@@ -803,7 +790,6 @@ class Book_interment(QMainWindow):
             error_message = "This plot is already reserved or booked."
             show_error_message(error_message)
         elif not check_plot_existence(plot_yard, plot_row, plot_col):
-            print("NO PLOT EXISTENCE")
             relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                              VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
             relative_result = execute_query(relative_query)
@@ -845,7 +831,6 @@ class Book_interment(QMainWindow):
             existing_transaction_result = execute_query_fetch(existing_transaction_query)
 
             if existing_transaction_result:
-                print("EXISTING TRANSACTION")
                 relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                                  VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
                 update_relative_result = execute_query(relative_query)
@@ -875,7 +860,6 @@ class Book_interment(QMainWindow):
                     error_message = "Booked failed. Please try again."
                     show_error_message(error_message)
             else:
-                print("NOT EXISTING TRANSACTION")
                 relative_query = f"INSERT INTO RELATIVE (rel_fname, rel_mname, rel_lname, rel_dob, rel_date_death, rel_date_interment, user_id) \
                                                                                 VALUES ('{dec_fname}', '{dec_mname}', '{dec_lname}', '{dec_dob}', '{dec_dod}', '{dec_doi}','{user_id}')"
                 update_relative_result = execute_query(relative_query)
