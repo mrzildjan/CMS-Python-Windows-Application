@@ -23,7 +23,7 @@ it utilizes the latest **PostgreSQL 15 Relational Database Management System**.
                                        prices and ability to reserve a plot for their deceased loved ones.
 - [x] **View Map** : Ability to view map to the chosen location of the cemetery.
 - [x] **View Transaction** : Ability to view all transactions including bookings and reservation on the
-                             customer.
+                             user.
 - [x] **About Us** : Information of the chosen cemetery management.
 
 ### Admin Overview System
