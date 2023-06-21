@@ -1,6 +1,7 @@
 # CMS-Python-Windows-Application
 
-**Cemasys** is a **Cemetery Management System** that is made using Python and PyQt 5 Designer.
+**Cemasys** is a **Cemetery Management System** that is made using Python and PyQt 5 Designer and also 
+it utilizes the latest PostgreSQL 15 Relational Database Management System
 
 ---
 
